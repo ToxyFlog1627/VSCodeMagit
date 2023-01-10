@@ -5,13 +5,28 @@
 		"ecmaVersion": 6,
 		"sourceType": "module"
 	},
-	"plugins": ["@typescript-eslint"],
+	"env": {
+		"browser": true,
+		"node": true
+	},
+	"plugins": ["@typescript-eslint", "eslint-plugin-sonarjs", "eslint-plugin-unicorn"],
+	"extends": ["eslint:recommended", "plugin:sonarjs/recommended", "plugin:@typescript-eslint/recommended", "plugin:unicorn/recommended"],
 	"rules": {
-		"@typescript-eslint/naming-convention": "warn",
-		"@typescript-eslint/semi": "warn",
-		"eqeqeq": "warn",
-		"no-throw-literal": "warn",
-		"semi": "off"
+		"no-unused-vars": "off",
+		"@typescript-eslint/no-unused-vars": ["error", {"argsIgnorePattern": "^_+"}],
+		"unicorn/filename-case": "off",
+		"unicorn/prefer-node-protocol": "off",
+		"unicorn/no-null": "off",
+		"unicorn/no-document-cookie": "off",
+		"unicorn/numeric-separators-style": "off",
+		"unicorn/no-useless-undefined": "off",
+		"unicorn/switch-case-braces": "off",
+		"unicorn/no-array-for-each": "off",
+		"unicorn/prefer-ternary": "off",
+		"unicorn/prevent-abbreviations": ["error", {"replacements": {"ref": false, "props": false, "num": false, "args": false, "i": false}}],
+		"unicorn/template-indent": ["error", {"indent": 4}],
+		"unicorn/no-array-callback-reference": "off",
+		"sonarjs/prefer-single-boolean-return": "off"
 	},
 	"ignorePatterns": ["out", "dist", "**/*.d.ts"]
 }

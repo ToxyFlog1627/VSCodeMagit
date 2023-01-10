@@ -1,8 +1,4 @@
 import {commands, ExtensionContext} from "vscode";
-import MagitEditor from "./editor";
-import magitCommands from "./commands";
+import createEditor from "./editor";
 
-export const activate = async (context: ExtensionContext) => {
-	context.subscriptions.push(MagitEditor.register());
-	context.subscriptions.push(...magitCommands.map(([command, callback]) => commands.registerCommand(`vscode-magit.${command}`, callback)));
-};
+export const activate = (context: ExtensionContext) => context.subscriptions.push(commands.registerCommand("vscode-magit.magit", createEditor(context)));
