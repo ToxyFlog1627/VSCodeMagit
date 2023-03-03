@@ -26,6 +26,7 @@
 		"unicorn/no-useless-undefined": "off",
 		"unicorn/switch-case-braces": "off",
 		"unicorn/no-array-for-each": "off",
+		"unicorn/no-await-expression-member": "off",
 		"unicorn/prefer-ternary": "off",
 		"unicorn/prevent-abbreviations": ["error", {"replacements": {"ref": false, "props": false, "num": false, "args": false, "i": false}}],
 		"unicorn/template-indent": ["error", {"indent": 4}],

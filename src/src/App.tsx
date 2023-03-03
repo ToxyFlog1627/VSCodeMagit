@@ -32,3 +32,11 @@
 // 	callbacks[id](data, error);
 // 	delete callbacks[id];
 // });
+
+import React from "react";
+
+const App = () => {
+	return <h1>test</h1>;
+};
+
+export default App;

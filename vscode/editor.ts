@@ -1,5 +1,6 @@
 import {window, workspace, ViewColumn, ExtensionContext, WebviewPanel, Uri} from "vscode";
 import api, {Response} from "./api";
+import path = require("path");
 
 let isOpened = false;
 let panel: WebviewPanel;
@@ -20,29 +21,13 @@ const openMagit = async (context: ExtensionContext) => {
 	if (isOpened) return panel.reveal();
 	isOpened = true;
 
-	const getFileUrl = (filename: string): Uri => panel.webview.asWebviewUri(Uri.joinPath(context.extensionUri, "page", filename));
-
 	panel = window.createWebviewPanel("vscode-magit.editor", "Magit", {viewColumn: ViewColumn.Active}, {enableScripts: true});
 	panel.iconPath = Uri.joinPath(context.extensionUri, "assets", "icon.png");
 
 	panel.webview.onDidReceiveMessage(message => onMessage(panel, message));
 	panel.onDidDispose(() => (isOpened = false));
 
-	panel.webview.html = `
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8" />
-            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-            <link href="${getFileUrl("styles.css")}" rel="stylesheet" />
-            <title>Magit</title>
-        </head>
-        <body>
-        </body>
-        <script src="${getFileUrl("script.js")}"></script>
-        </html>
-    `;
+	panel.webview.html = (await workspace.fs.readFile(Uri.joinPath(context.extensionUri, "page", "index.html"))).toString();
 };
 
 const createEditor = (context: ExtensionContext) => () => openMagit(context);

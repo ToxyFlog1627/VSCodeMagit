@@ -55,7 +55,7 @@ const getStagedChanges = async () => {
 	return {data: null, error: false};
 };
 
-const api: {[key: string]: () => Promise<Response>} = {
+const api: {[key: string]: (body: any) => Promise<Response>} = {
 	IS_IN_REPO: isInRepo,
 	GET_UNTRACKED_FILES: getUntrackedFiles,
 	GET_UNSTAGED_CHANGES: getUnstagedChanges,

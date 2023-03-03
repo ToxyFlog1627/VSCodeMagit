@@ -28,9 +28,8 @@
 		]
 	},
 	"scripts": {
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"lint": "eslint src --ext ts"
+		"build": "cd src && npm run build && cd .. && tsc -p ./",
+		"react": "cd src && npm run start"
 	},
 	"devDependencies": {
 		"@types/node": "16.x",
