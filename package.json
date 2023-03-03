@@ -29,6 +29,7 @@
 	},
 	"scripts": {
 		"build": "cd src && npm run build && cd .. && tsc -p ./",
+		"watch": "tsc -watch -p ./",
 		"react": "cd src && npm run start"
 	},
 	"devDependencies": {
