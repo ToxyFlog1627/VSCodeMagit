@@ -9,6 +9,7 @@ const Column = styled.div`
 `;
 
 const CodeContainer = styled(Column)`
+	color: var(--vscode-foreground);
 	background: var(--vscode-dropdown-background);
 	width: 100vw;
 	border: none;

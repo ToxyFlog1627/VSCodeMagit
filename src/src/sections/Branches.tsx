@@ -14,7 +14,10 @@ const Column = styled.div`
 	margin-right: 3px;
 `;
 
-const Text = styled.p``;
+const BranchName = styled.p<{color: string}>`
+	font-weight: bold;
+	color: var(--vscode-charts-${({color}) => color});
+`;
 
 const Branches: FunctionComponent<{}> = () => {
 	const [branches] = useFetch<{[key: string]: Branch}>("GET_BRANCHES");
@@ -23,16 +26,16 @@ const Branches: FunctionComponent<{}> = () => {
 	return (
 		<Group title="Branches" section>
 			<Column>
-				<Text>Local: </Text>
-				<Text>Remote: </Text>
+				<p>Local: </p>
+				<p>Remote: </p>
 			</Column>
 			<Column>
-				<Text>{branches.local.branch}</Text>
-				<Text>{branches.remote.branch}</Text>
+				<BranchName color="orange">{branches.local.branch}</BranchName>
+				<BranchName color="green">{branches.remote.branch}</BranchName>
 			</Column>
 			<Column>
-				<Text>{branches.local.commit}</Text>
-				<Text>{branches.remote.commit}</Text>
+				<p>{branches.local.commit}</p>
+				<p>{branches.remote.commit}</p>
 			</Column>
 		</Group>
 	);

@@ -1,20 +1,14 @@
 import {FunctionComponent, ReactNode, useState} from "react";
-import styled, {css} from "styled-components";
+import styled from "styled-components";
 import Caret from "./Caret";
 
 const Container = styled.div<{indented: boolean}>`
 	position: relative;
-	${({indented}) => indented && "margin-left: 14px;"}
+	${({indented}) => indented && "margin-left: 14px; margin-bottom: 3px;"}
 `;
 
 const Title = styled.p<{highlightTitle: boolean}>`
-	${({highlightTitle}) =>
-		highlightTitle &&
-		css`
-			color: var(--vscode-charts-blue);
-			font-size: 14px;
-			font-weight: bolder;
-		`}
+	${({highlightTitle}) => highlightTitle && "color: var(--vscode-editorLink-activeForeground); font-weight: bolder;"}
 `;
 
 const Content = styled.div`

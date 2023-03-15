@@ -9,13 +9,11 @@ const Column = styled.div`
 	margin-right: 2px;
 `;
 
-const Hash = styled.p``;
+const Hash = styled.p`
+	color: var(--vscode-disabledForeground);
+`;
 
-const Text = styled.p``;
-
-type Props = {};
-
-const Commits: FunctionComponent<Props> = ({}) => {
+const Commits: FunctionComponent<{}> = ({}) => {
 	const [commits] = useFetch<[string, string][]>("GET_COMMITS");
 	if (commits === null) return null;
 
@@ -28,7 +26,7 @@ const Commits: FunctionComponent<Props> = ({}) => {
 			</Column>
 			<Column>
 				{commits.map(([_, text]) => (
-					<Text>{text}</Text>
+					<p>{text}</p>
 				))}
 			</Column>
 		</Group>
