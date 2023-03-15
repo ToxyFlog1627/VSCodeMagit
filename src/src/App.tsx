@@ -1,42 +1,47 @@
-//! make "src/" react project, that is built into page folder for usage with vscode
-//! The only piece of code from there that is good-to-use:
-//! Make hook out of it or leave as helper/api function
-// TODO: react
+import {createContext, FunctionComponent, useState} from "react";
+import styled, {createGlobalStyle} from "styled-components";
+import Error from "./components/Error";
+import Branches from "./sections/Branches";
+import Files from "./sections/Files";
+import UnstagedChanges from "./sections/UnstagedChanges";
+import StagedChanges from "./sections/StagedChanges";
+import Commits from "./sections/Commits";
 
-// //* API
-// const vscode = acquireVsCodeApi(); // eslint-disable-line no-undef
+const GlobalStyles = createGlobalStyle`
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+`;
 
-// const MESSAGE_TIMEOUT_SECONDS = 10;
+const Container = styled.div`
+	padding: 2px;
+`;
 
-// let _id = 0;
-// const callbacks = {};
+export const ErrorContext = createContext({setError: (error: string) => {}});
 
-// const request = (type, message) => {
-// 	return new Promise(resolve => {
-// 		const id = _id++;
-// 		vscode.postMessage({id, type, message});
+type Props = {
+	error?: string;
+};
 
-// 		const timeout = setTimeout(() => resolve({data: "Timeout!", error: true}), MESSAGE_TIMEOUT_SECONDS * 1000);
-// 		callbacks[id] = (data, error) => {
-// 			clearTimeout(timeout);
-// 			if (error) resolve({data: error, error: true});
-// 			else resolve({data, error: false});
-// 		};
-// 	});
-// };
+const App: FunctionComponent<Props> = ({error: _error}) => {
+	const [error, setError] = useState<undefined | string>(_error);
 
-// window.addEventListener("message", async message => {
-// 	const {id, data, error} = message.data;
-// 	if (!callbacks[id]) return;
+	if (error) return <Error>{error}</Error>;
 
-// 	callbacks[id](data, error);
-// 	delete callbacks[id];
-// });
-
-import React from "react";
-
-const App = () => {
-	return <h1>test</h1>;
+	return (
+		<Container>
+			<GlobalStyles />
+			<ErrorContext.Provider value={{setError}}>
+				<Branches />
+				<Files />
+				<UnstagedChanges />
+				<StagedChanges />
+				<Commits />
+			</ErrorContext.Provider>
+		</Container>
+	);
 };
 
 export default App;

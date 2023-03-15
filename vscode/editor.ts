@@ -1,6 +1,5 @@
 import {window, workspace, ViewColumn, ExtensionContext, WebviewPanel, Uri} from "vscode";
 import api, {Response} from "./api";
-import path = require("path");
 
 let isOpened = false;
 let panel: WebviewPanel;
@@ -31,4 +30,5 @@ const openMagit = async (context: ExtensionContext) => {
 };
 
 const createEditor = (context: ExtensionContext) => () => openMagit(context);
+
 export default createEditor;
