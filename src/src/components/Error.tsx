@@ -14,9 +14,7 @@ const Text = styled.p`
 	text-align: center;
 `;
 
-type Props = {
-	children: string;
-};
+type Props = {children: string};
 
 const Error: FunctionComponent<Props> = ({children}) => (
 	<Container>

@@ -11,7 +11,7 @@ const onMessage = async (panel: WebviewPanel, {id, type, body}: {id: number; typ
 	try {
 		sendResponse(await api[type](body));
 	} catch (error) {
-		window.showErrorMessage(`Magit: Unexpected error: ${error}`);
+		window.showErrorMessage(`Magit. Unexpected error in ${type}: ${error}`);
 	}
 };
 

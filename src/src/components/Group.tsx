@@ -19,18 +19,20 @@ const Content = styled.div`
 type Props = {
 	title: string;
 	children?: ReactNode;
-	opened?: boolean;
+	isOpened?: boolean;
 	section?: boolean;
 };
 
-const Group: FunctionComponent<Props> = ({title, children, opened: _opened = true, section = false}) => {
-	const [opened, setOpened] = useState(_opened);
+const Group: FunctionComponent<Props> = ({title, children, isOpened: _isOpened = true, section = false}) => {
+	const [isOpened, setIsOpened] = useState(_isOpened);
 
 	return (
 		<Container indented={section}>
-			<Caret setOpened={setOpened} opened={opened} />
-			<Title highlightTitle={section}>{title}</Title>
-			{opened && <Content>{children}</Content>}
+			<Caret setOpened={setIsOpened} opened={isOpened} />
+			<Title onClick={() => setIsOpened(!isOpened)} highlightTitle={section}>
+				{title}
+			</Title>
+			{isOpened && <Content>{children}</Content>}
 		</Container>
 	);
 };

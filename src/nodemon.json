@@ -2,5 +2,5 @@
 	"watch": ["src/"],
 	"ext": "ts,tsx",
 	"exec": "node scripts/build.js",
-	"delay": 5000
+	"delay": 2000
 }

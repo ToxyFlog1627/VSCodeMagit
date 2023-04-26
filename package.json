@@ -41,5 +41,8 @@
 		"eslint-plugin-sonarjs": "^0.17.0",
 		"eslint-plugin-unicorn": "^45.0.2",
 		"typescript": "^4.9.3"
+	},
+	"dependencies": {
+		"parse-diff": "^0.11.1"
 	}
 }

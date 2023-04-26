@@ -1,4 +1,4 @@
-import {execCommand} from "./utils";
+import {execCommand, parseDiff} from "./utils";
 
 export type Response = {data: any; error: boolean};
 
@@ -26,35 +26,6 @@ const getUntrackedFiles = async () => {
 	const {data, error} = await execCommand("git ls-files --others --exclude-standard");
 	if (error) return {data: null, error: true};
 	return {data: data.split("\n")?.slice(0, -1) || [], error: false};
-};
-
-const parseDiff = (data: string) => {
-	let i = 0;
-	const result = [];
-	const lines = data.split("\n");
-
-	while (i < lines.length) {
-		if (!lines[i].startsWith("diff --git")) return {data: [], error: true};
-		i += 2;
-
-		if (!lines[i].startsWith("---")) {
-			i++;
-			continue;
-		}
-
-		const path = lines[i++].slice(6);
-		const action = lines[i++].slice(4) === "/dev/null" ? "deleted" : "modified";
-		const changes: string[][] = [];
-
-		while (i < lines.length && !lines[i].startsWith("diff --git")) {
-			if (lines[i].startsWith("@@ ")) changes.push([]);
-			changes[changes.length - 1].push(lines[i++]);
-		}
-
-		result.push([action, path, changes]);
-	}
-
-	return result;
 };
 
 const getUnstagedChanges = async () => {

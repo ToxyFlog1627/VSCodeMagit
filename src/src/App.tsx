@@ -1,11 +1,7 @@
 import {createContext, FunctionComponent, useState} from "react";
-import styled, {createGlobalStyle} from "styled-components";
+import {createGlobalStyle} from "styled-components";
 import Error from "./components/Error";
-import Branches from "./sections/Branches";
-import Files from "./sections/Files";
-import UnstagedChanges from "./sections/UnstagedChanges";
-import StagedChanges from "./sections/StagedChanges";
-import Commits from "./sections/Commits";
+import Page from "./sections";
 
 const GlobalStyles = createGlobalStyle`
     * {
@@ -15,15 +11,9 @@ const GlobalStyles = createGlobalStyle`
     }
 `;
 
-const Container = styled.div`
-	padding: 2px;
-`;
-
 export const ErrorContext = createContext({setError: (error: string) => {}});
 
-type Props = {
-	error?: string;
-};
+type Props = {error?: string};
 
 const App: FunctionComponent<Props> = ({error: _error}) => {
 	const [error, setError] = useState<undefined | string>(_error);
@@ -31,16 +21,10 @@ const App: FunctionComponent<Props> = ({error: _error}) => {
 	if (error) return <Error>{error}</Error>;
 
 	return (
-		<Container>
+		<ErrorContext.Provider value={{setError}}>
 			<GlobalStyles />
-			<ErrorContext.Provider value={{setError}}>
-				<Branches />
-				<Files />
-				<UnstagedChanges />
-				<StagedChanges />
-				<Commits />
-			</ErrorContext.Provider>
-		</Container>
+			<Page />
+		</ErrorContext.Provider>
 	);
 };
 
