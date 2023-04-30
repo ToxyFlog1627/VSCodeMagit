@@ -26,6 +26,8 @@ const openMagit = async (context: ExtensionContext) => {
 	panel.webview.onDidReceiveMessage(message => onMessage(panel, message));
 	panel.onDidDispose(() => (isOpened = false));
 
+	// TODO: on fs update, refresh or reopen magit window
+
 	panel.webview.html = (await workspace.fs.readFile(Uri.joinPath(context.extensionUri, "page", "index.html"))).toString();
 };
 

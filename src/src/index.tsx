@@ -7,8 +7,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 	const root: Element | null = document.querySelector("#root");
 	if (!root) throw new Error("Couldn't mount app - no element matched the selector!");
 
-	window.document.body.style.padding = "0";
-
 	const {data, error} = await response;
 	const app = createRoot(root);
 	app.render(<App error={!data || error ? "Git hasn't been initialized in this folder!" : undefined} />);

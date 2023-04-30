@@ -9,6 +9,10 @@ const GlobalStyles = createGlobalStyle`
         padding: 0;
         box-sizing: border-box;
     }
+
+    body {
+        padding: 0 !important;
+    }
 `;
 
 export const ErrorContext = createContext({setError: (error: string) => {}});

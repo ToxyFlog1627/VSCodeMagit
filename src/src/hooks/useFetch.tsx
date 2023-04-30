@@ -2,28 +2,28 @@ import {useContext, useEffect, useState} from "react";
 import {ErrorContext} from "../App";
 import request from "../utils/api";
 
-const subscriptions: {[endpoint: string]: (() => Promise<void>)[]} = {};
+const subscriptions: {[type: string]: (() => Promise<void>)[]} = {};
 
-export const updateSubscribed = (endpoint: string) => {
-	const callbacks = subscriptions[endpoint];
+export const updateSubscribed = (type: string) => {
+	const callbacks = subscriptions[type];
 	if (!callbacks) return;
 	callbacks.forEach(cb => cb());
 };
 
-const useFetch = <T,>(endpoint: string): [null | T, (value: T) => void, () => Promise<void>] => {
+const useFetch = <T,>(type: string): [null | T, (value: T) => void, () => Promise<void>] => {
 	const {setError} = useContext(ErrorContext);
 	const [data, setData] = useState<null | T>(null);
 
 	const fetchData = async () => {
-		const {data, error} = await request(endpoint);
-		if (error) return setError(`Error requesting ${endpoint}!`);
+		const {data, error} = await request(type);
+		if (error) return setError(`Error requesting ${type}!`);
 		setData(data);
 	};
 
 	useEffect(() => {
 		fetchData();
-		if (!subscriptions[endpoint]) subscriptions[endpoint] = [];
-		subscriptions[endpoint].push(fetchData);
+		if (!subscriptions[type]) subscriptions[type] = [];
+		subscriptions[type].push(fetchData);
 	}, []);
 
 	return [data, setData, fetchData];

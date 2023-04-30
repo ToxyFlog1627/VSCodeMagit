@@ -3,11 +3,6 @@ import Group from "../components/Group";
 import styled from "styled-components";
 import useFetch from "../hooks/useFetch";
 
-type Branch = {
-	branch: string;
-	commit: string;
-};
-
 const Column = styled.div`
 	display: flex;
 	flex-direction: column;
@@ -19,7 +14,12 @@ const BranchName = styled.p<{color: string}>`
 	color: var(--vscode-charts-${({color}) => color});
 `;
 
-const Branches: FunctionComponent<{}> = () => {
+type Branch = {
+	branch: string;
+	commit: string;
+};
+
+const Branches: FunctionComponent = () => {
 	const [branches] = useFetch<{[key: string]: Branch}>("branches");
 	if (branches === null) return null;
 

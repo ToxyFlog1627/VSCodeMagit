@@ -20,25 +20,26 @@ const Hunk = styled(Column)`
 	background: var(--vscode-button-background);
 `;
 
-const Line = styled.p<{type: string}>`
+const Line = styled.p<{children: string}>`
 	white-space: pre;
-	color: ${({type}) => (type === "+" ? "var(--vscode-gitDecoration-addedResourceForeground)" : type === "-" ? "var(--vscode-gitDecoration-deletedResourceForeground)" : "inherit")};
-	background: ${({type}) => (type === "+" ? "#00FF0020" : type === "-" ? "#FF000020" : "#00000000")};
+	color: ${({children}) => (children[0] === "+" ? "var(--vscode-gitDecoration-addedResourceForeground)" : children[0] === "-" ? "var(--vscode-gitDecoration-deletedResourceForeground)" : "inherit")};
+	background: ${({children}) => (children[0] === "+" ? "#00FF0020" : children[0] === "-" ? "#FF000020" : "#00000000")};
 	width: 100%;
 	padding: 1px;
 `;
+
+const getFileChangeDescription = (from: string, to: string) => {
+	if (to === "/dev/null") return `deleted ${from}`;
+	if (from === "/dev/null") return `created ${to}`;
+	if (from !== to) return `renamed ${from} -> ${to}`;
+	return `modified ${to}`;
+};
 
 export type Diff = {
 	from: string;
 	to: string;
 	hunks: string[][];
 }[];
-
-const getFileChangeDescription = (from: string, to: string) => {
-	if (to === "/dev/null") return `deleted ${from}`;
-	if (from !== to) return `renamed ${from} -> ${to}`;
-	return `modified ${to}`;
-};
 
 type Props = {
 	title: string;
@@ -52,11 +53,11 @@ const Changes: FunctionComponent<Props> = ({title, changes}) => (
 				hunks.length > 0 ? (
 					<Group title={getFileChangeDescription(from, to)} isOpened={false}>
 						<TextContainer>
-							{hunks.map(hunk => (
-								<Group title={hunk[0]}>
+							{hunks.map(lines => (
+								<Group title={lines[0]}>
 									<Hunk>
-										{hunk.slice(1, -1).map(line => (
-											<Line type={line[0]}>{line}</Line>
+										{lines.slice(1, -1).map(line => (
+											<Line>{line}</Line>
 										))}
 									</Hunk>
 								</Group>

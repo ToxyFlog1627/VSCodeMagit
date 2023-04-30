@@ -24,6 +24,7 @@ const Selection: FunctionComponent = () => {
 			case "k":
 				if (selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
 				break;
+			// TODO: key to refresh window, m.b. by closing and creating again
 			default:
 				if (elements[selectedIndex].keybindings[key]) elements[selectedIndex].keybindings[key]();
 		}

@@ -47,6 +47,18 @@ const commits = async () => {
 	return {data: commits.map(line => [line.slice(0, 7), line.slice(8)]), error: false};
 };
 
-const api: {[key: string]: (body: any) => Promise<Response>} = {isInRepo, branches, untrackedFiles, unstagedChanges, stagedChanges, commits};
+const addFile = async (file: string) => {
+	const {error} = await execCommand(`git add ${file}`);
+	if (error) return {data: null, error: true};
+	return {data: null, error: false};
+};
+
+const addAllFiles = async () => {
+	const {error} = await execCommand("git add .");
+	if (error) return {data: null, error: true};
+	return {data: null, error: false};
+};
+
+const api: {[key: string]: (body: any) => Promise<Response>} = {isInRepo, branches, untrackedFiles, unstagedChanges, stagedChanges, commits, addFile, addAllFiles};
 
 export default api;

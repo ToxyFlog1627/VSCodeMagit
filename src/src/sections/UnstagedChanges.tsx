@@ -4,8 +4,8 @@ import useFetch from "../hooks/useFetch";
 
 const UnstagedChanges: FunctionComponent = () => {
 	const [changes] = useFetch<Diff>("unstagedChanges");
-	if (changes === null) return null;
 
+	if (changes === null || changes.length === 0) return null;
 	return <Changes title="Unstaged changes" changes={changes} />;
 };
 
