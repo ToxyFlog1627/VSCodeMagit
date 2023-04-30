@@ -8,25 +8,22 @@ const Column = styled.div`
 	width: 100%;
 `;
 
-// TODO: colorscheme-dependent colors + make text in edited line be correctly colored.
-
 const TextContainer = styled(Column)`
-	background: #f0ff0f;
-	color: var(--vscode-foreground);
+	background: var(--vscode-button-hoverBackground);
+	color: var(--vscode-editor-foreground);
 	width: 100vw;
 	border: none;
 	border-radius: 2px;
 `;
 
-const TextColumn = styled(Column)`
-	overflow-x: hidden;
-	background: var(--vscode-dropdown-background);
+const Hunk = styled(Column)`
+	background: var(--vscode-button-background);
 `;
 
 const Line = styled.p<{type: string}>`
 	white-space: pre;
-	color: ${({type}) => (type === "+" ? "#0ec930" : type === "-" ? "#c91515" : "#ffffff")};
-	background: ${({type}) => (type === "+" ? "#00FF0018" : type === "-" ? "#FF000018" : "#00000000")};
+	color: ${({type}) => (type === "+" ? "var(--vscode-gitDecoration-addedResourceForeground)" : type === "-" ? "var(--vscode-gitDecoration-deletedResourceForeground)" : "inherit")};
+	background: ${({type}) => (type === "+" ? "#00FF0020" : type === "-" ? "#FF000020" : "#00000000")};
 	width: 100%;
 	padding: 1px;
 `;
@@ -51,21 +48,25 @@ type Props = {
 const Changes: FunctionComponent<Props> = ({title, changes}) => (
 	<Group title={title} section>
 		<Column>
-			{changes.map(({from, to, hunks}) => (
-				<Group title={getFileChangeDescription(from, to)} isOpened={false}>
-					<TextContainer>
-						{hunks.map(hunk => (
-							<Group title={hunk[0]}>
-								<TextColumn>
-									{hunk.slice(1, -1).map(line => (
-										<Line type={line[0]}>{line}</Line>
-									))}
-								</TextColumn>
-							</Group>
-						))}
-					</TextContainer>
-				</Group>
-			))}
+			{changes.map(({from, to, hunks}) =>
+				hunks.length > 0 ? (
+					<Group title={getFileChangeDescription(from, to)} isOpened={false}>
+						<TextContainer>
+							{hunks.map(hunk => (
+								<Group title={hunk[0]}>
+									<Hunk>
+										{hunk.slice(1, -1).map(line => (
+											<Line type={line[0]}>{line}</Line>
+										))}
+									</Hunk>
+								</Group>
+							))}
+						</TextContainer>
+					</Group>
+				) : (
+					<p>{getFileChangeDescription(from, to)}</p>
+				)
+			)}
 		</Column>
 	</Group>
 );

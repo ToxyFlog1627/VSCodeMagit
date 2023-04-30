@@ -7,19 +7,19 @@ import Commits from "./Commits";
 import styled from "styled-components";
 
 const Container = styled.div`
-	margin: 0 5px;
+	margin-left: 5px;
+	overflow-x: hidden;
+	color: var(--vscode-foreground);
 `;
 
-const Page: FunctionComponent = () => {
-	return (
-		<Container>
-			<Branches />
-			<Files />
-			<UnstagedChanges />
-			<StagedChanges />
-			<Commits />
-		</Container>
-	);
-};
+const Page: FunctionComponent = () => (
+	<Container>
+		<Branches />
+		<Files />
+		<UnstagedChanges />
+		<StagedChanges />
+		<Commits />
+	</Container>
+);
 
 export default Page;
