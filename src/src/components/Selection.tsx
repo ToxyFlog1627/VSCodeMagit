@@ -1,7 +1,6 @@
 import {FunctionComponent, useEffect, useState} from "react";
 import styled from "styled-components";
 import {elements, getClosestElement} from "../hooks/useSelectable";
-import {invokeKeybinding} from "../utils/keybindings";
 
 const Block = styled.div<{position: DOMRect}>`
 	position: absolute;
@@ -17,8 +16,8 @@ const Block = styled.div<{position: DOMRect}>`
 const Selection: FunctionComponent = () => {
 	const [selectedIndex, setSelectedIndex] = useState(-1);
 
-	const onKeyPress = (event: KeyboardEvent) => {
-		switch (event.key) {
+	const onKeyPress = ({key}: KeyboardEvent) => {
+		switch (key) {
 			case "j":
 				if (selectedIndex + 1 < elements.length) setSelectedIndex(selectedIndex + 1);
 				break;
@@ -26,7 +25,7 @@ const Selection: FunctionComponent = () => {
 				if (selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
 				break;
 			default:
-				invokeKeybinding(elements[selectedIndex], event.key);
+				if (elements[selectedIndex].keybindings[key]) elements[selectedIndex].keybindings[key]();
 		}
 	};
 
@@ -43,7 +42,7 @@ const Selection: FunctionComponent = () => {
 	}, []);
 
 	if (selectedIndex < 0 || selectedIndex >= elements.length) return null;
-	return <Block position={elements[selectedIndex].boundingBox} />;
+	return <Block position={elements[selectedIndex].element.getBoundingClientRect()} />;
 };
 
 export default Selection;
