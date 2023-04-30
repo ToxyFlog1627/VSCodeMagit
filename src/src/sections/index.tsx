@@ -1,4 +1,5 @@
 import {FunctionComponent} from "react";
+import Selection from "../components/Selection";
 import Branches from "./Branches";
 import Files from "./Files";
 import UnstagedChanges from "./UnstagedChanges";
@@ -14,6 +15,7 @@ const Container = styled.div`
 
 const Page: FunctionComponent = () => (
 	<Container>
+		<Selection />
 		<Branches />
 		<Files />
 		<UnstagedChanges />
