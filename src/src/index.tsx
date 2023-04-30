@@ -2,7 +2,7 @@ import {createRoot} from "react-dom/client";
 import App from "./App";
 import request from "./utils/api";
 
-const response = request("IS_IN_REPO");
+const response = request("isInRepo");
 document.addEventListener("DOMContentLoaded", async () => {
 	const root: Element | null = document.querySelector("#root");
 	if (!root) throw new Error("Couldn't mount app - no element matched the selector!");

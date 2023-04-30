@@ -1,6 +1,6 @@
 import {useEffect, useRef} from "react";
 
-type Keybindings = {[key: string]: () => void};
+export type Keybindings = {[key: string]: () => any};
 export type Element = {
 	element: HTMLElement;
 	keybindings: Keybindings;
@@ -34,7 +34,7 @@ export const getClosestElement = (y: number): number => {
 	return dst2 < dst1 ? i + 1 : i;
 };
 
-const useSelectable = (keybindings: Keybindings = {}) => {
+const useSelectable = (globalKeybindings: Keybindings = {}) => {
 	const id = useRef(_id++);
 	const batch = useRef<Element[]>([]);
 
@@ -56,7 +56,7 @@ const useSelectable = (keybindings: Keybindings = {}) => {
 		updateElementsArray();
 	});
 
-	return (element: HTMLElement | null) => element && batch.current.push({keybindings, element});
+	return (elementKeybindings: Keybindings) => (element: HTMLElement | null) => element && batch.current.push({keybindings: {...globalKeybindings, ...elementKeybindings}, element});
 };
 
 export default useSelectable;

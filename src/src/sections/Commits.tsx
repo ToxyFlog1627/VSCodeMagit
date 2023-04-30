@@ -13,8 +13,8 @@ const Hash = styled.p`
 	color: var(--vscode-disabledForeground);
 `;
 
-const Commits: FunctionComponent<{}> = ({}) => {
-	const [commits] = useFetch<[string, string][]>("GET_COMMITS");
+const Commits: FunctionComponent = () => {
+	const [commits] = useFetch<[string, string][]>("commits");
 	if (commits === null) return null;
 
 	return (

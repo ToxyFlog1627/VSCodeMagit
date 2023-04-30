@@ -25,15 +25,17 @@ type Props = {
 };
 
 const Group: FunctionComponent<Props> = ({title, children, isOpened: _isOpened = true, section = false}) => {
+	const selectable = useSelectable();
+	const [isOpened, setIsOpened] = useState(_isOpened);
+
 	const toggleOpened = () => setIsOpened(!isOpened);
 
-	const selectable = useSelectable({"Enter": toggleOpened, " ": toggleOpened});
-	const [isOpened, setIsOpened] = useState(_isOpened);
+	const keybindings = {"Enter": toggleOpened, " ": toggleOpened};
 
 	return (
 		<Container indented={section}>
 			<Caret setOpened={setIsOpened} opened={isOpened} />
-			<Title onClick={toggleOpened} highlightTitle={section} ref={selectable}>
+			<Title onClick={toggleOpened} highlightTitle={section} ref={selectable(keybindings)}>
 				{title}
 			</Title>
 			{isOpened && <Content>{children}</Content>}

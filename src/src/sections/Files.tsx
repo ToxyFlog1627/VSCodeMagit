@@ -1,16 +1,41 @@
 import {FunctionComponent} from "react";
 import Group from "../components/Group";
-import useFetch from "../hooks/useFetch";
+import useFetch, {updateSubscribed} from "../hooks/useFetch";
+import useSelectable from "../hooks/useSelectable";
 
-const Files: FunctionComponent<{}> = ({}) => {
-	const [files] = useFetch<string[]>("GET_UNTRACKED_FILES");
-	if (files === null) return null;
+type Props = {files: string[]};
+
+const FileList: FunctionComponent<Props> = ({files}) => {
+	const selectable = useSelectable({S: () => addAllFiles()});
+
+	const addAllFiles = async () => {
+		// TODO: add actual request
+		updateSubscribed("untrackedFiles");
+		updateSubscribed("stagedChanges");
+	};
+
+	const addFile = async (file: string) => {
+		// TODO: add actual request
+		updateSubscribed("untrackedFiles");
+		updateSubscribed("stagedChanges");
+	};
 
 	return (
-		<Group title="Untracked files" section>
+		<>
 			{files.map(file => (
-				<p>{file}</p>
+				<p ref={selectable({s: () => addFile(file)})}>{file}</p>
 			))}
+		</>
+	);
+};
+
+const Files: FunctionComponent = () => {
+	const [files] = useFetch<string[]>("untrackedFiles");
+
+	if (files === null) return null;
+	return (
+		<Group title="Untracked files" section>
+			<FileList files={files} />
 		</Group>
 	);
 };

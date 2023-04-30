@@ -20,7 +20,7 @@ const BranchName = styled.p<{color: string}>`
 `;
 
 const Branches: FunctionComponent<{}> = () => {
-	const [branches] = useFetch<{[key: string]: Branch}>("GET_BRANCHES");
+	const [branches] = useFetch<{[key: string]: Branch}>("branches");
 	if (branches === null) return null;
 
 	return (

@@ -8,7 +8,7 @@ const isInRepo = async () => {
 	return {data: data.startsWith("true"), error: false};
 };
 
-const getBranches = async () => {
+const branches = async () => {
 	const localCommit = await execCommand("git show -s --format=%s @");
 	if (!localCommit.data || localCommit.error) return {data: null, error: false};
 	const remoteCommit = await execCommand("git show -s --format=%s @{u}");
@@ -22,38 +22,31 @@ const getBranches = async () => {
 	return {data: branches, error: false};
 };
 
-const getUntrackedFiles = async () => {
+const untrackedFiles = async () => {
 	const {data, error} = await execCommand("git ls-files --others --exclude-standard");
 	if (error) return {data: null, error: true};
 	return {data: data.split("\n")?.slice(0, -1) || [], error: false};
 };
 
-const getUnstagedChanges = async () => {
+const unstagedChanges = async () => {
 	const {data, error} = await execCommand("git diff");
 	if (error) return {data: null, error: true};
 	return {data: parseDiff(data), error: false};
 };
 
-const getStagedChanges = async () => {
+const stagedChanges = async () => {
 	const {data, error} = await execCommand("git diff --cached");
 	if (error) return {data: null, error: true};
 	return {data: parseDiff(data), error: false};
 };
 
-const getCommits = async () => {
+const commits = async () => {
 	const {data, error} = await execCommand('git log --pretty="format:%h %B"');
 	if (error) return {data: null, error: true};
 	const commits = data.split("\n").filter((_, i) => i % 2 == 0);
 	return {data: commits.map(line => [line.slice(0, 7), line.slice(8)]), error: false};
 };
 
-const api: {[key: string]: (body: any) => Promise<Response>} = {
-	IS_IN_REPO: isInRepo,
-	GET_BRANCHES: getBranches,
-	GET_UNTRACKED_FILES: getUntrackedFiles,
-	GET_UNSTAGED_CHANGES: getUnstagedChanges,
-	GET_STAGED_CHANGES: getStagedChanges,
-	GET_COMMITS: getCommits,
-};
+const api: {[key: string]: (body: any) => Promise<Response>} = {isInRepo, branches, untrackedFiles, unstagedChanges, stagedChanges, commits};
 
 export default api;
