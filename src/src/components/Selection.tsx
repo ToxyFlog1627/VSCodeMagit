@@ -1,8 +1,9 @@
-import {FunctionComponent, useEffect, useState} from "react";
-import styled from "styled-components";
-import {elements, getClosestElement} from "../hooks/useSelectable";
+import { FunctionComponent, useEffect, useState } from 'react';
+import styled from 'styled-components';
+import { elements, getClosestElement } from '../hooks/useSelectable';
+import { refresh } from '../hooks/useFetch';
 
-const Block = styled.div<{position: DOMRect}>`
+const Block = styled.div<{ position: DOMRect }>`
 	position: absolute;
 	z-index: 999;
 	top: ${props => props.position.top}px;
@@ -16,15 +17,17 @@ const Block = styled.div<{position: DOMRect}>`
 const Selection: FunctionComponent = () => {
 	const [selectedIndex, setSelectedIndex] = useState(-1);
 
-	const onKeyPress = ({key}: KeyboardEvent) => {
+	const onKeyPress = ({ key }: KeyboardEvent) => {
 		switch (key) {
-			case "j":
+			case 'j':
 				if (selectedIndex + 1 < elements.length) setSelectedIndex(selectedIndex + 1);
 				break;
-			case "k":
+			case 'k':
 				if (selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
 				break;
-			// TODO: key to refresh window, m.b. by closing and creating again
+			case 'r':
+				refresh();
+				break;
 			default:
 				if (elements[selectedIndex].keybindings[key]) elements[selectedIndex].keybindings[key]();
 		}
@@ -33,13 +36,13 @@ const Selection: FunctionComponent = () => {
 	const onClick = (event: MouseEvent) => setSelectedIndex(getClosestElement(event.clientY));
 
 	useEffect(() => {
-		window.addEventListener("keypress", onKeyPress);
-		return () => window.removeEventListener("keypress", onKeyPress);
+		window.addEventListener('keypress', onKeyPress);
+		return () => window.removeEventListener('keypress', onKeyPress);
 	});
 
 	useEffect(() => {
-		window.addEventListener("click", onClick);
-		return () => window.removeEventListener("click", onClick);
+		window.addEventListener('click', onClick);
+		return () => window.removeEventListener('click', onClick);
 	}, []);
 
 	if (selectedIndex < 0 || selectedIndex >= elements.length) return null;

@@ -3,4 +3,4 @@ dist
 node_modules
 src/node_modules
 page
-.vscode
+.vscode/settings.json

@@ -1,8 +1,10 @@
-import {useContext, useEffect, useState} from "react";
-import {ErrorContext} from "../App";
-import request from "../utils/api";
+import { useContext, useEffect, useState } from 'react';
+import { ErrorContext } from '../App';
+import request from '../utils/api';
 
-const subscriptions: {[type: string]: (() => Promise<void>)[]} = {};
+const subscriptions: { [type: string]: (() => Promise<void>)[] } = {};
+
+export const refresh = () => Object.keys(subscriptions).forEach(key => updateSubscribed(key));
 
 export const updateSubscribed = (type: string) => {
 	const callbacks = subscriptions[type];
@@ -11,11 +13,11 @@ export const updateSubscribed = (type: string) => {
 };
 
 const useFetch = <T,>(type: string): [null | T, (value: T) => void, () => Promise<void>] => {
-	const {setError} = useContext(ErrorContext);
+	const { setError } = useContext(ErrorContext);
 	const [data, setData] = useState<null | T>(null);
 
 	const fetchData = async () => {
-		const {data, error} = await request(type);
+		const { data, error } = await request(type);
 		if (error) return setError(`Error requesting ${type}!`);
 		setData(data);
 	};

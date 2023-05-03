@@ -43,6 +43,7 @@
 		"typescript": "^4.9.3"
 	},
 	"dependencies": {
+		"ignore": "^5.2.4",
 		"parse-diff": "^0.11.1"
 	}
 }

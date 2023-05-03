@@ -13,7 +13,7 @@
 	"extends": ["eslint:recommended", "plugin:sonarjs/recommended", "plugin:@typescript-eslint/recommended", "plugin:unicorn/recommended"],
 	"rules": {
 		"no-unused-vars": "off",
-		"@typescript-eslint/no-unused-vars": ["error", {"argsIgnorePattern": "^_+"}],
+		"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_+" }],
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"@typescript-eslint/no-explicit-any": "off",
 		"unicorn/filename-case": "off",
@@ -28,9 +28,10 @@
 		"unicorn/no-array-for-each": "off",
 		"unicorn/no-await-expression-member": "off",
 		"unicorn/prefer-ternary": "off",
-		"unicorn/prevent-abbreviations": ["error", {"replacements": {"ref": false, "props": false, "num": false, "args": false, "i": false}}],
-		"unicorn/template-indent": ["error", {"indent": 4}],
+		"unicorn/prevent-abbreviations": ["error", { "replacements": { "ref": false, "props": false, "num": false, "args": false, "i": false } }],
+		"unicorn/template-indent": ["error", { "indent": 4 }],
 		"unicorn/no-array-callback-reference": "off",
+		"unicorn/consistent-function-scoping": "off",
 		"sonarjs/prefer-single-boolean-return": "off",
 		"sonarjs/no-nested-template-literals": "off",
 		"sonarjs/cognitive-complexity": "off"
