@@ -1,7 +1,7 @@
-import {FunctionComponent} from "react";
-import Group from "../components/Group";
-import styled from "styled-components";
-import useFetch from "../hooks/useFetch";
+import { FunctionComponent } from 'react';
+import Group from '../components/Group';
+import styled from 'styled-components';
+import useFetch from '../hooks/useFetch';
 
 const Column = styled.div`
 	display: flex;
@@ -9,9 +9,9 @@ const Column = styled.div`
 	margin-right: 3px;
 `;
 
-const BranchName = styled.p<{color: string}>`
+const BranchName = styled.p<{ color: string }>`
 	font-weight: bold;
-	color: var(--vscode-charts-${({color}) => color});
+	color: var(--vscode-charts-${({ color }) => color});
 `;
 
 type Branch = {
@@ -20,9 +20,9 @@ type Branch = {
 };
 
 const Branches: FunctionComponent = () => {
-	const [branches] = useFetch<{[key: string]: Branch}>("branches");
-	if (branches === null) return null;
+	const branches = useFetch<{ [key: string]: Branch }>('branches');
 
+	if (branches === null) return null;
 	return (
 		<Group title="Branches" section>
 			<Column>

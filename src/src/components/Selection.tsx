@@ -6,9 +6,9 @@ import { refresh } from '../hooks/useFetch';
 const Block = styled.div<{ position: DOMRect }>`
 	position: absolute;
 	z-index: 999;
-	top: ${props => props.position.top}px;
+	top: ${props => window.scrollY + props.position.top}px;
 	left: ${props => props.position.left}px;
-	width: 100%;
+	width: calc(100% - ${props => props.position.left}px);
 	height: ${props => props.position.height}px;
 	background: var(--vscode-editor-selectionHighlightBackground);
 	pointer-events: none;
@@ -29,7 +29,7 @@ const Selection: FunctionComponent = () => {
 				refresh();
 				break;
 			default:
-				if (elements[selectedIndex].keybindings[key]) elements[selectedIndex].keybindings[key]();
+				if (selectedIndex !== -1 && elements[selectedIndex].keybindings[key]) elements[selectedIndex].keybindings[key]();
 		}
 	};
 
@@ -45,7 +45,7 @@ const Selection: FunctionComponent = () => {
 		return () => window.removeEventListener('click', onClick);
 	}, []);
 
-	if (selectedIndex < 0 || selectedIndex >= elements.length) return null;
+	if (selectedIndex === -1 || selectedIndex >= elements.length) return null;
 	return <Block position={elements[selectedIndex].element.getBoundingClientRect()} />;
 };
 

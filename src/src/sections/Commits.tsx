@@ -1,7 +1,7 @@
-import {FunctionComponent} from "react";
-import styled from "styled-components";
-import Group from "../components/Group";
-import useFetch from "../hooks/useFetch";
+import { FunctionComponent } from 'react';
+import styled from 'styled-components';
+import Group from '../components/Group';
+import useFetch from '../hooks/useFetch';
 
 const Column = styled.div`
 	display: flex;
@@ -14,9 +14,9 @@ const Hash = styled.p`
 `;
 
 const Commits: FunctionComponent = () => {
-	const [commits] = useFetch<[string, string][]>("commits");
-	if (commits === null) return null;
+	const commits = useFetch<[string, string][]>('commits');
 
+	if (commits === null) return null;
 	return (
 		<Group title="Recent commits" section>
 			<Column>

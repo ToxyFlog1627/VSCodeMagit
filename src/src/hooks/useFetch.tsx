@@ -12,7 +12,7 @@ export const updateSubscribed = (type: string) => {
 	callbacks.forEach(cb => cb());
 };
 
-const useFetch = <T,>(type: string): [null | T, (value: T) => void, () => Promise<void>] => {
+const useFetch = <T,>(type: string): null | T => {
 	const { setError } = useContext(ErrorContext);
 	const [data, setData] = useState<null | T>(null);
 
@@ -28,7 +28,7 @@ const useFetch = <T,>(type: string): [null | T, (value: T) => void, () => Promis
 		subscriptions[type].push(fetchData);
 	}, []);
 
-	return [data, setData, fetchData];
+	return data;
 };
 
 export default useFetch;

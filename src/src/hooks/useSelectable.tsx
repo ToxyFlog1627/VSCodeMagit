@@ -1,13 +1,13 @@
-import {useEffect, useRef} from "react";
+import { useEffect, useRef } from 'react';
 
-export type Keybindings = {[key: string]: () => any};
+export type Keybindings = { [key: string]: () => any };
 export type Element = {
 	element: HTMLElement;
 	keybindings: Keybindings;
 };
 
 let _id = 0;
-const elementMap: {[id: number]: Element[]} = {};
+const elementMap: { [id: number]: Element[] } = {};
 export let elements: Element[] = [];
 
 const findElement = (top: number): number => {
@@ -34,7 +34,7 @@ export const getClosestElement = (y: number): number => {
 	return dst2 < dst1 ? i + 1 : i;
 };
 
-const useSelectable = (globalKeybindings: Keybindings = {}) => {
+const useSelectable = () => {
 	const id = useRef(_id++);
 	const batch = useRef<Element[]>([]);
 
@@ -43,12 +43,13 @@ const useSelectable = (globalKeybindings: Keybindings = {}) => {
 		elements = allElements.sort((a, b) => a.element.getBoundingClientRect().top - b.element.getBoundingClientRect().top);
 	};
 
-	useEffect(() => {
-		return () => {
+	useEffect(
+		() => () => {
 			delete elementMap[id.current];
 			updateElementsArray();
-		};
-	}, []);
+		},
+		[]
+	);
 
 	useEffect(() => {
 		elementMap[id.current] = batch.current;
@@ -56,7 +57,7 @@ const useSelectable = (globalKeybindings: Keybindings = {}) => {
 		updateElementsArray();
 	});
 
-	return (elementKeybindings: Keybindings) => (element: HTMLElement | null) => element && batch.current.push({keybindings: {...globalKeybindings, ...elementKeybindings}, element});
+	return (keybindings: Keybindings) => (element: HTMLElement | null) => element && batch.current.push({ keybindings, element });
 };
 
 export default useSelectable;

@@ -24,9 +24,7 @@ const openMagit = async (context: ExtensionContext) => {
 
 	panel = window.createWebviewPanel('vscode-magit.editor', 'Magit', { viewColumn: ViewColumn.Active }, { enableScripts: true });
 	panel.iconPath = Uri.joinPath(context.extensionUri, 'assets', 'icon.png');
-
 	panel.webview.onDidReceiveMessage(onMessage);
-	panel.onDidDispose(() => (isOpened = false));
 
 	let matchGitignore = (_path: string) => true;
 	const updateGitignoreMatcher = async () => {
@@ -52,6 +50,12 @@ const openMagit = async (context: ExtensionContext) => {
 	watcher.onDidChange(refreshIfNeeded);
 	watcher.onDidCreate(refreshIfNeeded);
 	watcher.onDidDelete(refreshIfNeeded);
+
+	panel.onDidDispose(() => {
+		isOpened = false;
+		gitignoreWatcher.dispose();
+		watcher.dispose();
+	});
 
 	const page = await workspace.fs.readFile(Uri.joinPath(context.extensionUri, 'page', 'index.html'));
 	panel.webview.html = page.toString();

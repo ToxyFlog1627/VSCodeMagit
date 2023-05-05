@@ -1,6 +1,9 @@
-import {commands, ExtensionContext} from "vscode";
-import createEditor from "./editor";
+import { commands, ExtensionContext } from 'vscode';
+import createEditor from './editor';
 
-export const activate = (context: ExtensionContext) => context.subscriptions.push(commands.registerCommand("vscode-magit.magit", createEditor(context)));
+export let patchPath: string;
 
-// TODO: add button on the left side?
+export const activate = (context: ExtensionContext) => {
+	patchPath = context.storageUri!.fsPath;
+	context.subscriptions.push(commands.registerCommand('vscode-magit.magit', createEditor(context)));
+};
