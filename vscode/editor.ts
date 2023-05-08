@@ -17,7 +17,7 @@ const onMessage = async ({ id, type, body }: { id: number; type: string; body: a
 };
 
 const openMagit = async (context: ExtensionContext) => {
-	if (workspace.workspaceFolders === undefined) return window.showErrorMessage('Magit: Magit can only be opened inside of a workspace!');
+	if (!workspace.workspaceFolders) return window.showErrorMessage('Magit: Magit can only be opened inside of a workspace!');
 
 	if (isOpened) return panel.reveal();
 	isOpened = true;

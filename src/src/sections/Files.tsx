@@ -11,9 +11,7 @@ const Column = styled.div`
 	flex-direction: column;
 `;
 
-type Props = { files: string[] };
-
-const FileList: FunctionComponent<Props> = ({ files }) => {
+const FileList: FunctionComponent<{ files: string[] }> = ({ files }) => {
 	const selectable = useSelectable();
 	const { setError } = useContext(ErrorContext);
 
@@ -43,7 +41,7 @@ const FileList: FunctionComponent<Props> = ({ files }) => {
 const Files: FunctionComponent = () => {
 	const files = useFetch<string[]>('untrackedFiles');
 
-	if (files === null || files.length === 0) return null;
+	if (!files || files.length === 0) return null;
 	return (
 		<Group title="Untracked files" section>
 			<FileList files={files} />

@@ -16,7 +16,7 @@ const Hash = styled.p`
 const Commits: FunctionComponent = () => {
 	const commits = useFetch<[string, string][]>('commits');
 
-	if (commits === null) return null;
+	if (!commits) return null;
 	return (
 		<Group title="Recent commits" section>
 			<Column>

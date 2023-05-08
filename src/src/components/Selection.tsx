@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { elements, getClosestElement } from '../hooks/useSelectable';
 import { refresh } from '../hooks/useFetch';
@@ -16,21 +16,32 @@ const Block = styled.div<{ position: DOMRect }>`
 
 const Selection: FunctionComponent = () => {
 	const [selectedIndex, setSelectedIndex] = useState(-1);
+	const elementRef = useRef(null);
 
-	const onKeyPress = ({ key }: KeyboardEvent) => {
-		switch (key) {
+	const onKeyPress = (event: KeyboardEvent) => {
+		switch (event.key) {
 			case 'j':
-				if (selectedIndex + 1 < elements.length) setSelectedIndex(selectedIndex + 1);
+				setSelectedIndex(Math.min(selectedIndex + 1, elements.length - 1));
 				break;
 			case 'k':
-				if (selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
+				setSelectedIndex(Math.max(selectedIndex - 1, 0));
 				break;
 			case 'r':
 				refresh();
 				break;
-			default:
-				if (selectedIndex !== -1 && elements[selectedIndex].keybindings[key]) elements[selectedIndex].keybindings[key]();
+			case 'g':
+				setSelectedIndex(0);
+				break;
+			case 'G':
+				setSelectedIndex(elements.length - 1);
+				break;
+			case ' ':
+				if (event.target === document.body) event.preventDefault();
+				break;
 		}
+
+		if (selectedIndex < 0 || !elements[selectedIndex].keybindings[event.key]) return;
+		elements[selectedIndex].keybindings[event.key]();
 	};
 
 	const onClick = (event: MouseEvent) => setSelectedIndex(getClosestElement(event.clientY));
@@ -41,12 +52,18 @@ const Selection: FunctionComponent = () => {
 	});
 
 	useEffect(() => {
+		if (!elementRef.current) return;
+		const element = elementRef.current as HTMLElement;
+		element.scrollIntoView({ block: 'nearest' });
+	}, [selectedIndex]);
+
+	useEffect(() => {
 		window.addEventListener('click', onClick);
 		return () => window.removeEventListener('click', onClick);
 	}, []);
 
 	if (selectedIndex === -1 || selectedIndex >= elements.length) return null;
-	return <Block position={elements[selectedIndex].element.getBoundingClientRect()} />;
+	return <Block position={elements[selectedIndex].element.getBoundingClientRect()} ref={elementRef} />;
 };
 
 export default Selection;

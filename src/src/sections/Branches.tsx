@@ -22,7 +22,7 @@ type Branch = {
 const Branches: FunctionComponent = () => {
 	const branches = useFetch<{ [key: string]: Branch }>('branches');
 
-	if (branches === null) return null;
+	if (!branches) return null;
 	return (
 		<Group title="Branches" section>
 			<Column>

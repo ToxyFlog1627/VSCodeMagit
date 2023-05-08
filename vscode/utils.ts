@@ -18,3 +18,11 @@ export const execCommand = (command: string): Promise<{ data: string; error: boo
 		});
 	});
 };
+
+export const getHunkByHeader = (lines: string[], header: string): string[] | null => {
+	const hunkStart = lines.indexOf(header);
+	if (hunkStart === -1) return null;
+	const hunkEnd = lines.findIndex((line, i) => i > hunkStart && line.startsWith('@@'));
+
+	return hunkEnd === -1 ? lines.slice(hunkStart) : lines.slice(hunkStart, hunkEnd);
+};
