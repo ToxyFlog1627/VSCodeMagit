@@ -1,7 +1,7 @@
 import { window } from 'vscode';
 import { writeFile } from 'fs/promises';
 import { patchPath } from './extension';
-import { execCommand, getCommitsNumber, getHunkByHeader, parseDiff } from './utils';
+import { execCommand, getHunkByHeader, parseDiff } from './utils';
 
 export type Response = { data: any } | { error: boolean };
 
@@ -21,10 +21,12 @@ const api: { [key: string]: (body: any) => Promise<Response> } = {
 		if (!data || error) return { error: true };
 		return { data: null };
 	},
+	commitsNumber: async () => {
+		const { data, error } = await execCommand('git rev-list --all --count');
+		if (error) return { error: true };
+		return { data: Number(data) };
+	},
 	branches: async () => {
-		const commitsNumber = await getCommitsNumber();
-		if (commitsNumber === 0) return { data: null }; // TODO: Return branch name. Make component display only local if remote doesn't exist
-
 		const localBranch = await execCommand('git rev-parse --abbrev-ref --symbolic-full-name @');
 		if (localBranch.error) return { error: true };
 		const remoteBranch = await execCommand('git rev-parse --abbrev-ref --symbolic-full-name @{u}');
@@ -57,17 +59,12 @@ const api: { [key: string]: (body: any) => Promise<Response> } = {
 		return { data: parseDiff(data) };
 	},
 	commits: async () => {
-		const commitsNumber = await getCommitsNumber();
-		if (commitsNumber === 0) return { data: [] };
-
 		const separator = '|||';
 		const { data, error } = await execCommand(`git log --pretty="format:%h${separator}%B"`);
 		if (error) return { error: true };
 
-		const commits = data
-			.split('\n')
-			.filter((_, i) => i % 2 == 0)
-			.map(line => line.split(separator));
+		const lines = data.split('\n');
+		const commits = lines.filter(line => line.length > 1).map(line => line.split(separator));
 		return { data: commits };
 	},
 	addFile: async (file: string) => {

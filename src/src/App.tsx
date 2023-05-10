@@ -21,12 +21,13 @@ export const ErrorContext = createContext({ showError: (error: string) => {} });
 
 const App: FunctionComponent = () => {
 	const repo = useFetch<boolean>('isInRepo');
+	const commitsNumber = useFetch<number>('commitsNumber');
 
-	if (!repo) return <CreateRepo />;
+	if (repo === null || commitsNumber === null) return null;
 	return (
-		<ErrorContext.Provider value={{ showError: message => request('showError', message) }}>
+		<ErrorContext.Provider value={{ showError: error => request('showError', error) }}>
 			<GlobalStyles />
-			<Page />
+			{repo ? commitsNumber === 0 ? <div>There aren't any commits in the repository!</div> : <Page /> : <CreateRepo />}
 		</ErrorContext.Provider>
 	);
 };

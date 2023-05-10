@@ -26,9 +26,3 @@ export const getHunkByHeader = (lines: string[], header: string): string[] | nul
 
 	return hunkEnd === -1 ? lines.slice(hunkStart) : lines.slice(hunkStart, hunkEnd);
 };
-
-export const getCommitsNumber = async (): Promise<number> => {
-	const { data, error } = await execCommand('git rev-list --all --count');
-	if (error) return 0;
-	return Number(data);
-};
