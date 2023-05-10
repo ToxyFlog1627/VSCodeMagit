@@ -1,7 +1,9 @@
-import {createContext, FunctionComponent, useState} from "react";
-import {createGlobalStyle} from "styled-components";
-import Error from "./components/Error";
-import Page from "./sections";
+import { createContext, FunctionComponent } from 'react';
+import { createGlobalStyle } from 'styled-components';
+import Page from './sections';
+import useFetch from './hooks/useFetch';
+import request from './utils/api';
+import CreateRepo from './components/CreateRepo';
 
 const GlobalStyles = createGlobalStyle`
     * {
@@ -15,17 +17,14 @@ const GlobalStyles = createGlobalStyle`
     }
 `;
 
-export const ErrorContext = createContext({setError: (error: string) => {}});
+export const ErrorContext = createContext({ showError: (error: string) => {} });
 
-type Props = {error?: string};
+const App: FunctionComponent = () => {
+	const repo = useFetch<boolean>('isInRepo');
 
-const App: FunctionComponent<Props> = ({error: _error}) => {
-	const [error, setError] = useState<undefined | string>(_error);
-
-	if (error) return <Error>{error}</Error>;
-
+	if (!repo) return <CreateRepo />;
 	return (
-		<ErrorContext.Provider value={{setError}}>
+		<ErrorContext.Provider value={{ showError: message => request('showError', message) }}>
 			<GlobalStyles />
 			<Page />
 		</ErrorContext.Provider>

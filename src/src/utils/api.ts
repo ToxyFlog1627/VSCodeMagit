@@ -14,10 +14,9 @@ const request = (type: string, body: any = null): Promise<{ data: any; error: bo
 		vscode.postMessage({ id, type, body });
 
 		const timeout = setTimeout(() => resolve({ data: null, error: true }), MESSAGE_TIMEOUT_SECONDS * 1000);
-		callbacks[id] = (data: any, error: boolean) => {
+		callbacks[id] = (data: any = null, error: boolean = false) => {
 			clearTimeout(timeout);
-			if (error) resolve({ data, error: true });
-			else resolve({ data, error: false });
+			resolve({ data, error });
 		};
 	});
 };

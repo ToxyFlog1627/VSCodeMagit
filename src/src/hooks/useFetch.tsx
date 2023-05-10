@@ -12,13 +12,13 @@ export const updateSubscribed = (type: string) => {
 	callbacks.forEach(cb => cb());
 };
 
-const useFetch = <T,>(type: string): null | T => {
-	const { setError } = useContext(ErrorContext);
-	const [data, setData] = useState<null | T>(null);
+const useFetch = <T,>(type: string): T | null => {
+	const { showError } = useContext(ErrorContext);
+	const [data, setData] = useState<T | null>(null);
 
 	const fetchData = async () => {
 		const { data, error } = await request(type);
-		if (error) return setError(`Error requesting ${type}!`);
+		if (error) return showError(`Error requesting ${type}!`);
 		setData(data);
 	};
 

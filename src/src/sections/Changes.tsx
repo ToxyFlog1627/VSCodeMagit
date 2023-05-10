@@ -82,10 +82,7 @@ const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, range
 	}, []);
 
 	const lineAction = (index: number) => {
-		if (selection.index === -1) {
-			rangeAction(file, lines[0], index, 1);
-			return;
-		}
+		if (selection.index === -1) return rangeAction(file, lines[0], index, 1);
 
 		const min = Math.min(selection.index, selection.index + selection.offset);
 		const max = Math.max(selection.index, selection.index + selection.offset);
@@ -130,40 +127,40 @@ type Props = { stagedChanges: boolean };
 
 const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 	const selectable = useSelectable();
-	const { setError } = useContext(ErrorContext);
+	const { showError } = useContext(ErrorContext);
 	const diff = useFetch<Diff>(stagedChanges ? 'stagedChanges' : 'unstagedChanges');
 
 	const stageAllFiles = async () => {
 		const { error } = await request('stageAllFiles');
-		if (error) return setError("Couldn't stage files!");
+		if (error) return showError("Couldn't stage files!");
 		updateSubscribed('unstagedChanges');
 		updateSubscribed('stagedChanges');
 	};
 
 	const stageFile = async (file: string) => {
 		const { error } = await request('stageFile', file);
-		if (error) return setError("Couldn't stage file!");
+		if (error) return showError("Couldn't stage file!");
 		updateSubscribed('unstagedChanges');
 		updateSubscribed('stagedChanges');
 	};
 
 	const stageHunk = async (file: string, header: string) => {
 		const { error } = await request('stageHunk', { file, header });
-		if (error) return setError("Couldn't stage hunk!");
+		if (error) return showError("Couldn't stage hunk!");
 		updateSubscribed('unstagedChanges');
 		updateSubscribed('stagedChanges');
 	};
 
 	const stageRange = async (file: string, header: string, index: number, length: number) => {
 		const { error } = await request('stageRange', { file, header, index, length });
-		if (error) return setError("Couldn't stage range!");
+		if (error) return showError("Couldn't stage range!");
 		updateSubscribed('unstagedChanges');
 		updateSubscribed('stagedChanges');
 	};
 
 	const unstageAllFiles = async () => {
 		const { error } = await request('unstageAllFiles');
-		if (error) return setError("Couldn't unstage files!");
+		if (error) return showError("Couldn't unstage files!");
 		updateSubscribed('stagedChanges');
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('unstagedChanges');
@@ -171,7 +168,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 
 	const unstageFile = async (file: string) => {
 		const { error } = await request('unstageFile', file);
-		if (error) return setError("Couldn't unstage file!");
+		if (error) return showError("Couldn't unstage file!");
 		updateSubscribed('stagedChanges');
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('unstagedChanges');
@@ -179,7 +176,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 
 	const unstageHunk = async (file: string, header: string) => {
 		const { error } = await request('unstageHunk', { file, header });
-		if (error) return setError("Couldn't unstage hunk!");
+		if (error) return showError("Couldn't unstage hunk!");
 		updateSubscribed('stagedChanges');
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('unstagedChanges');
@@ -187,7 +184,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 
 	const unstageRange = async (file: string, header: string, index: number, length: number) => {
 		const { error } = await request('unstageRange', { file, header, index, length });
-		if (error) return setError("Couldn't unstage range!");
+		if (error) return showError("Couldn't unstage range!");
 		updateSubscribed('stagedChanges');
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('unstagedChanges');

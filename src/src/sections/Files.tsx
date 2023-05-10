@@ -13,18 +13,18 @@ const Column = styled.div`
 
 const FileList: FunctionComponent<{ files: string[] }> = ({ files }) => {
 	const selectable = useSelectable();
-	const { setError } = useContext(ErrorContext);
+	const { showError } = useContext(ErrorContext);
 
 	const addAllFiles = async () => {
 		const { error } = await request('addAllFiles');
-		if (error) return setError("Couldn't add files!");
+		if (error) return showError("Couldn't add files!");
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('stagedChanges');
 	};
 
 	const addFile = async (file: string) => {
 		const { error } = await request('addFile', file);
-		if (error) return setError("Couldn't add file!");
+		if (error) return showError("Couldn't add file!");
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('stagedChanges');
 	};

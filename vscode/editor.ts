@@ -8,7 +8,7 @@ let panel: WebviewPanel;
 const onMessage = async ({ id, type, body }: { id: number; type: string; body: any }): Promise<void> => {
 	const sendResponse = (response: Response) => void panel.webview.postMessage({ id, ...response });
 
-	if (!api[type]) return sendResponse({ data: `No operation of type ${type}!`, error: true });
+	if (!api[type]) return sendResponse({ error: true });
 	try {
 		sendResponse(await api[type](body));
 	} catch (error) {
