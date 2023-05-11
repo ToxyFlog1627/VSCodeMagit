@@ -1,10 +1,11 @@
 import { FunctionComponent } from 'react';
-import Selection from '../components/Selection';
+import styled from 'styled-components';
+import Selection from '../../components/Selection';
 import Branches from './Branches';
 import Files from './Files';
 import Commits from './Commits';
-import styled from 'styled-components';
 import Changes from './Changes';
+import GlobalStyles from '../../utils/globalStyles';
 
 const Container = styled.div`
 	margin-left: 5px;
@@ -12,9 +13,11 @@ const Container = styled.div`
 	color: var(--vscode-foreground);
 `;
 
-const Page: FunctionComponent = () => (
+const MainPage: FunctionComponent = () => (
 	<Container>
+		<GlobalStyles />
 		<Selection />
+
 		<Branches />
 		<Files />
 		<Changes stagedChanges={false} />
@@ -23,4 +26,4 @@ const Page: FunctionComponent = () => (
 	</Container>
 );
 
-export default Page;
+export default MainPage;

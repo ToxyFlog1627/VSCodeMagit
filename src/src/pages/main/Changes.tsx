@@ -1,10 +1,9 @@
-import { FunctionComponent, useContext, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Group from '../components/Group';
-import useSelectable, { Keybindings } from '../hooks/useSelectable';
-import useFetch, { updateSubscribed } from '../hooks/useFetch';
-import { ErrorContext } from '../App';
-import request from '../utils/api';
+import Group from '../../components/Group';
+import useSelectable, { Keybindings } from '../../hooks/useSelectable';
+import useFetch, { updateSubscribed } from '../../hooks/useFetch';
+import request from '../../utils/api';
 
 const Column = styled.div`
 	display: flex;
@@ -127,40 +126,59 @@ type Props = { stagedChanges: boolean };
 
 const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 	const selectable = useSelectable();
-	const { showError } = useContext(ErrorContext);
 	const diff = useFetch<Diff>(stagedChanges ? 'stagedChanges' : 'unstagedChanges');
 
 	const stageAllFiles = async () => {
 		const { error } = await request('stageAllFiles');
-		if (error) return showError("Couldn't stage files!");
+		if (error) {
+			request('showError', "Couldn't stage files!");
+			return;
+		}
+
 		updateSubscribed('unstagedChanges');
 		updateSubscribed('stagedChanges');
 	};
 
 	const stageFile = async (file: string) => {
 		const { error } = await request('stageFile', file);
-		if (error) return showError("Couldn't stage file!");
+		if (error) {
+			request('showError', "Couldn't stage file!");
+			return;
+		}
+
 		updateSubscribed('unstagedChanges');
 		updateSubscribed('stagedChanges');
 	};
 
 	const stageHunk = async (file: string, header: string) => {
 		const { error } = await request('stageHunk', { file, header });
-		if (error) return showError("Couldn't stage hunk!");
+		if (error) {
+			request('showError', "Couldn't stage hunk!");
+			return;
+		}
+
 		updateSubscribed('unstagedChanges');
 		updateSubscribed('stagedChanges');
 	};
 
 	const stageRange = async (file: string, header: string, index: number, length: number) => {
 		const { error } = await request('stageRange', { file, header, index, length });
-		if (error) return showError("Couldn't stage range!");
+		if (error) {
+			request('showError', "Couldn't stage range!");
+			return;
+		}
+
 		updateSubscribed('unstagedChanges');
 		updateSubscribed('stagedChanges');
 	};
 
 	const unstageAllFiles = async () => {
 		const { error } = await request('unstageAllFiles');
-		if (error) return showError("Couldn't unstage files!");
+		if (error) {
+			request('showError', "Couldn't unstage files!");
+			return;
+		}
+
 		updateSubscribed('stagedChanges');
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('unstagedChanges');
@@ -168,7 +186,11 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 
 	const unstageFile = async (file: string) => {
 		const { error } = await request('unstageFile', file);
-		if (error) return showError("Couldn't unstage file!");
+		if (error) {
+			request('showError', "Couldn't unstage file!");
+			return;
+		}
+
 		updateSubscribed('stagedChanges');
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('unstagedChanges');
@@ -176,7 +198,11 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 
 	const unstageHunk = async (file: string, header: string) => {
 		const { error } = await request('unstageHunk', { file, header });
-		if (error) return showError("Couldn't unstage hunk!");
+		if (error) {
+			request('showError', "Couldn't unstage hunk!");
+			return;
+		}
+
 		updateSubscribed('stagedChanges');
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('unstagedChanges');
@@ -184,7 +210,11 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 
 	const unstageRange = async (file: string, header: string, index: number, length: number) => {
 		const { error } = await request('unstageRange', { file, header, index, length });
-		if (error) return showError("Couldn't unstage range!");
+		if (error) {
+			request('showError', "Couldn't unstage range!");
+			return;
+		}
+
 		updateSubscribed('stagedChanges');
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('unstagedChanges');

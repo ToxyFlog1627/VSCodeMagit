@@ -1,9 +1,8 @@
-import { FunctionComponent, useContext } from 'react';
-import Group from '../components/Group';
-import useFetch, { updateSubscribed } from '../hooks/useFetch';
-import useSelectable from '../hooks/useSelectable';
-import request from '../utils/api';
-import { ErrorContext } from '../App';
+import { FunctionComponent } from 'react';
+import Group from '../../components/Group';
+import useFetch, { updateSubscribed } from '../../hooks/useFetch';
+import useSelectable from '../../hooks/useSelectable';
+import request from '../../utils/api';
 import styled from 'styled-components';
 
 const Column = styled.div`
@@ -13,18 +12,25 @@ const Column = styled.div`
 
 const FileList: FunctionComponent<{ files: string[] }> = ({ files }) => {
 	const selectable = useSelectable();
-	const { showError } = useContext(ErrorContext);
 
 	const addAllFiles = async () => {
 		const { error } = await request('addAllFiles');
-		if (error) return showError("Couldn't add files!");
+		if (error) {
+			request('showError', "Couldn't add files!");
+			return;
+		}
+
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('stagedChanges');
 	};
 
 	const addFile = async (file: string) => {
 		const { error } = await request('addFile', file);
-		if (error) return showError("Couldn't add file!");
+		if (error) {
+			request('showError', "Couldn't add file!");
+			return;
+		}
+
 		updateSubscribed('untrackedFiles');
 		updateSubscribed('stagedChanges');
 	};

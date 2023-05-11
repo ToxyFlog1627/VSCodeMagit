@@ -38,7 +38,7 @@ const CreateRepo = () => {
 
 	return (
 		<Container>
-			<Text>Workspace isn't a git repository.</Text>
+			<Text>Workspace isn't a git repo.</Text>
 			<Button onClick={initRepo}>Initialize</Button>
 		</Container>
 	);

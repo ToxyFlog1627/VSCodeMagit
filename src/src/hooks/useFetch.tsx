@@ -1,5 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
-import { ErrorContext } from '../App';
+import { useEffect, useState } from 'react';
 import request from '../utils/api';
 
 const subscriptions: { [type: string]: (() => Promise<void>)[] } = {};
@@ -13,12 +12,15 @@ export const updateSubscribed = (type: string) => {
 };
 
 const useFetch = <T,>(type: string): T | null => {
-	const { showError } = useContext(ErrorContext);
 	const [data, setData] = useState<T | null>(null);
 
 	const fetchData = async () => {
 		const { data, error } = await request(type);
-		if (error) return showError(`Error requesting ${type}!`);
+		if (error) {
+			request('showError', `Error requesting ${type}!`);
+			return;
+		}
+
 		setData(data);
 	};
 

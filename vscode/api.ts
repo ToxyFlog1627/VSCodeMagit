@@ -6,7 +6,6 @@ import { execCommand, getHunkByHeader, parseDiff } from './utils';
 export type Response = { data: any } | { error: boolean };
 
 const api: { [key: string]: (body: any) => Promise<Response> } = {
-	// TODO: fix errors that appear in empty git repo. Make it return empty string instead of error!
 	showError: async (message: string) => {
 		window.showErrorMessage(message);
 		return { data: null };

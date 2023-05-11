@@ -1,7 +1,7 @@
 import { FunctionComponent } from 'react';
-import Group from '../components/Group';
+import Group from '../../components/Group';
 import styled from 'styled-components';
-import useFetch from '../hooks/useFetch';
+import useFetch from '../../hooks/useFetch';
 
 const Column = styled.div`
 	display: flex;
