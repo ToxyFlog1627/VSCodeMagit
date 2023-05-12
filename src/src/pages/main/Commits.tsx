@@ -14,11 +14,11 @@ const Hash = styled.p`
 	color: var(--vscode-disabledForeground);
 `;
 
-const Commits: FunctionComponent = () => {
+type Props = { showDiff: (hash: string) => void };
+
+const Commits: FunctionComponent<Props> = ({ showDiff }) => {
 	const selectable = useSelectable();
 	const commits = useFetch<[string, string][]>('commits');
-
-	const showDiff = (hash: string) => {};
 
 	if (!commits) return null;
 	return (

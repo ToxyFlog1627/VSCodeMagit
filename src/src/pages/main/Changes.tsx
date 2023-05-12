@@ -4,6 +4,7 @@ import Group from '../../components/Group';
 import useSelectable, { Keybindings } from '../../hooks/useSelectable';
 import useFetch, { updateSubscribed } from '../../hooks/useFetch';
 import request from '../../utils/api';
+import TextLine from '../../components/TextLine';
 
 const Column = styled.div`
 	display: flex;
@@ -21,32 +22,6 @@ const TextContainer = styled(Column)`
 
 const HunkContainer = styled(Column)`
 	background: var(--vscode-button-background);
-`;
-
-type LineProps = {
-	children: string;
-	selected: boolean;
-};
-
-const getLineColor = ({ children }: LineProps): string => {
-	if (children[0] === '+') return 'var(--vscode-gitDecoration-addedResourceForeground)';
-	if (children[0] === '-') return 'var(--vscode-gitDecoration-deletedResourceForeground)';
-	return 'inherit';
-};
-
-const getLineBackground = ({ children, selected }: LineProps): string => {
-	const hexOpacity = selected ? '78' : '20';
-	if (children[0] === '+') return `#00FF00${hexOpacity}`;
-	if (children[0] === '-') return `#FF0000${hexOpacity}`;
-	return selected ? `#ffffff20` : 'transparent';
-};
-
-const Line = styled.p<LineProps>`
-	white-space: pre;
-	color: ${getLineColor};
-	background: ${getLineBackground};
-	width: 100%;
-	padding: 1px;
 `;
 
 const getFileChangeDescription = (from: string, to: string) => {
@@ -70,6 +45,7 @@ type HunkProps = {
 };
 
 const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, rangeAction }) => {
+	// TODO: showing changes partially as diff can be 100K+ lines
 	const [selection, setSelection] = useState({ index: -1, offset: 0 });
 	const selectable = useSelectable();
 
@@ -102,7 +78,7 @@ const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, range
 	return (
 		<HunkContainer>
 			{lines.slice(1).map((line, i) => (
-				<Line
+				<TextLine
 					selected={isSelected(i)}
 					ref={selectable(
 						getKeybindings(() => lineAction(i), {
@@ -116,7 +92,7 @@ const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, range
 					)}
 				>
 					{line}
-				</Line>
+				</TextLine>
 			))}
 		</HunkContainer>
 	);

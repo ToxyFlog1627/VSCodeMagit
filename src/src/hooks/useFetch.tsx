@@ -11,11 +11,11 @@ export const updateSubscribed = (type: string) => {
 	callbacks.forEach(cb => cb());
 };
 
-const useFetch = <T,>(type: string): T | null => {
+const useFetch = <T,>(type: string, value?: any): T | null => {
 	const [data, setData] = useState<T | null>(null);
 
 	const fetchData = async () => {
-		const { data, error } = await request(type);
+		const { data, error } = await request(type, value);
 		if (error) {
 			request('showError', `Error requesting ${type}!`);
 			return;

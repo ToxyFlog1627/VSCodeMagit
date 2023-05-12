@@ -25,22 +25,32 @@ const api: { [key: string]: (body: any) => Promise<Response> } = {
 		if (error) return { error: true };
 		return { data: Number(data) };
 	},
+	diff: async (hash: string) => {
+		const { data, error } = await execCommand(`git show --pretty=format:%b ${hash}`);
+		if (error) return { error: true };
+		return { data };
+	},
 	branches: async () => {
 		const localBranch = await execCommand('git rev-parse --abbrev-ref --symbolic-full-name @');
 		if (localBranch.error) return { error: true };
-		const remoteBranch = await execCommand('git rev-parse --abbrev-ref --symbolic-full-name @{u}');
-		if (remoteBranch.error) return { error: true };
 		const localCommit = await execCommand('git show -s --format=%s @');
 		if (localCommit.error) return { error: true };
-		const remoteCommit = await execCommand('git show -s --format=%s @{u}');
-		if (remoteCommit.error) return { error: true };
+		const local = { commit: localCommit.data.slice(0, -1), branch: localBranch.data.slice(0, -1) };
 
-		return {
-			data: {
-				local: { commit: localCommit.data.slice(0, -1), branch: localBranch.data.slice(0, -1) },
-				remote: { commit: remoteCommit.data.slice(0, -1), branch: remoteBranch.data.slice(0, -1) }
-			}
-		};
+		const remotes = await execCommand('git remote show');
+		if (remotes.error) return { error: true };
+		const remotesNumber = remotes.data.split('\n').length - 1;
+
+		let remote = null;
+		if (remotesNumber > 0) {
+			const remoteBranch = await execCommand('git rev-parse --abbrev-ref --symbolic-full-name @{u}');
+			if (remoteBranch.error) return { error: true };
+			const remoteCommit = await execCommand('git show -s --format=%s @{u}');
+			if (remoteCommit.error) return { error: true };
+			remote = { commit: remoteCommit.data.slice(0, -1), branch: remoteBranch.data.slice(0, -1) };
+		}
+
+		return { data: { local, remote } };
 	},
 	untrackedFiles: async () => {
 		const { data, error } = await execCommand('git ls-files --others --exclude-standard');

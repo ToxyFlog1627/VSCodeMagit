@@ -14,6 +14,8 @@ const Block = styled.div<{ position: DOMRect }>`
 	pointer-events: none;
 `;
 
+export let resetSelection = () => {};
+
 const Selection: FunctionComponent = () => {
 	const [selectedIndex, setSelectedIndex] = useState(-1);
 	const elementRef = useRef(null);
@@ -45,6 +47,8 @@ const Selection: FunctionComponent = () => {
 	};
 
 	const onClick = (event: MouseEvent) => setSelectedIndex(getClosestElement(event.clientY));
+
+	resetSelection = () => setSelectedIndex(-1);
 
 	useEffect(() => {
 		window.addEventListener('keypress', onKeyPress);

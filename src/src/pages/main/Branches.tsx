@@ -23,19 +23,20 @@ const Branches: FunctionComponent = () => {
 	const branches = useFetch<{ [key: string]: Branch }>('branches');
 
 	if (!branches) return null;
+	const doesRemoteExist = branches.remote !== null;
 	return (
 		<Group title="Branches" section>
 			<Column>
 				<p>Local: </p>
-				<p>Remote: </p>
+				{doesRemoteExist && <p>Remote: </p>}
 			</Column>
 			<Column>
 				<BranchName color="orange">{branches.local.branch}</BranchName>
-				<BranchName color="green">{branches.remote.branch}</BranchName>
+				{doesRemoteExist && <BranchName color="green">{branches.remote.branch}</BranchName>}
 			</Column>
 			<Column>
 				<p>{branches.local.commit}</p>
-				<p>{branches.remote.commit}</p>
+				{doesRemoteExist && <p>{branches.remote.commit}</p>}
 			</Column>
 		</Group>
 	);

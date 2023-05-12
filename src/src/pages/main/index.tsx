@@ -1,11 +1,12 @@
-import { FunctionComponent } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Selection from '../../components/Selection';
+import Selection, { resetSelection } from '../../components/Selection';
 import Branches from './Branches';
 import Files from './Files';
 import Commits from './Commits';
 import Changes from './Changes';
 import GlobalStyles from '../../utils/globalStyles';
+import Diff from '../Diff';
 
 const Container = styled.div`
 	margin-left: 5px;
@@ -13,17 +14,29 @@ const Container = styled.div`
 	color: var(--vscode-foreground);
 `;
 
-const MainPage: FunctionComponent = () => (
-	<Container>
-		<GlobalStyles />
-		<Selection />
+const MainPage: FunctionComponent = () => {
+	const [diffHash, setDiffHash] = useState<string | null>(null);
 
-		<Branches />
-		<Files />
-		<Changes stagedChanges={false} />
-		<Changes stagedChanges={true} />
-		<Commits />
-	</Container>
-);
+	useEffect(resetSelection);
+
+	return (
+		<Container>
+			<GlobalStyles />
+			<Selection />
+
+			{diffHash ? (
+				<Diff hash={diffHash} closeDiff={() => setDiffHash(null)} />
+			) : (
+				<>
+					<Branches />
+					<Files />
+					<Changes stagedChanges={false} />
+					<Changes stagedChanges={true} />
+					<Commits showDiff={(hash: string) => setDiffHash(hash)} />
+				</>
+			)}
+		</Container>
+	);
+};
 
 export default MainPage;
