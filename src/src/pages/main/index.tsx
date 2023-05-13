@@ -24,10 +24,9 @@ const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
 	const [diffHash, setDiffHash] = useState<string | null>(null);
 	const [isCommitEditorVisible, setIsCommitEditorVisible] = useState<boolean>(false);
 
-	useEffect(resetSelection);
-
 	useKeybindings({ c: () => setIsCommitEditorVisible(true) });
 
+	resetSelection();
 	if (diffHash) return <Diff hash={diffHash} close={() => setDiffHash(null)} />;
 	if (isCommitEditorVisible) return <CommitMessageEditor close={() => setIsCommitEditorVisible(false)} />;
 	return (
@@ -45,8 +44,8 @@ const MainPage: FunctionComponent = () => {
 	const [selectedIndex, setSelectedIndex] = useState(-1);
 
 	useKeybindings({
-		j: () => setSelectedIndex(Math.min(selectedIndex + 1, elements.length - 1)),
-		k: () => setSelectedIndex(Math.max(selectedIndex - 1, 0)),
+		j: () => selectedIndex < elements.length - 1 && setSelectedIndex(selectedIndex + 1),
+		k: () => selectedIndex > 0 && setSelectedIndex(selectedIndex - 1),
 		g: () => setSelectedIndex(0),
 		G: () => setSelectedIndex(elements.length - 1),
 		r: refresh

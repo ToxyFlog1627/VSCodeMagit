@@ -30,7 +30,7 @@ const useFetch = <T,>(type: string, { value, disableAutoRefetch }: { value?: any
 
 		if (!subscriptions[type]) subscriptions[type] = [];
 		subscriptions[type].push(fetchData);
-	}, []);
+	}, [type, value]);
 
 	return data;
 };
