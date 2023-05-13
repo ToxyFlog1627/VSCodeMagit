@@ -19,7 +19,7 @@ type Props = {
 const Diff: FunctionComponent<Props> = ({ hash, closeDiff }) => {
 	// TODO: showing changes partially as diff can be 100K+ lines
 	const selectable = useSelectable();
-	const diff = useFetch<string>('diff', hash);
+	const diff = useFetch<string>('diff', { value: hash });
 
 	const keybindings = { q: () => closeDiff() };
 

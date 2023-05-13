@@ -14,20 +14,29 @@ const Hash = styled.p`
 	color: var(--vscode-disabledForeground);
 `;
 
+type HashesProps = Props & { hashes: string[] };
+
+const Hashes: FunctionComponent<HashesProps> = ({ showDiff, hashes }) => {
+	const selectable = useSelectable();
+
+	return (
+		<Column>
+			{hashes.map(hash => (
+				<Hash ref={selectable({ Enter: () => showDiff(hash), ' ': () => showDiff(hash) })}>{hash}</Hash>
+			))}
+		</Column>
+	);
+};
+
 type Props = { showDiff: (hash: string) => void };
 
 const Commits: FunctionComponent<Props> = ({ showDiff }) => {
-	const selectable = useSelectable();
 	const commits = useFetch<[string, string][]>('commits');
 
 	if (!commits) return null;
 	return (
 		<Group title="Recent commits" section>
-			<Column>
-				{commits.map(([hash]) => (
-					<Hash ref={selectable({ Enter: () => showDiff(hash), ' ': () => showDiff(hash) })}>{hash}</Hash>
-				))}
-			</Column>
+			<Hashes hashes={commits.map(([hash]) => hash)} showDiff={showDiff} />
 			<Column>
 				{commits.map(([_, text]) => (
 					<p>{text}</p>

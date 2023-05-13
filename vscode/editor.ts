@@ -1,6 +1,6 @@
-import { window, workspace, ViewColumn, ExtensionContext, WebviewPanel, Uri, RelativePattern } from 'vscode';
-import ignore from 'ignore';
+import { window, workspace, ViewColumn, ExtensionContext, WebviewPanel, Uri } from 'vscode';
 import api, { Response } from './api';
+import onTrackedFilesChange from './fileWatcher';
 
 let isOpened = false;
 let panel: WebviewPanel;
@@ -18,47 +18,23 @@ const onMessage = async ({ id, type, body }: { id: number; type: string; body: a
 
 const openMagit = async (context: ExtensionContext) => {
 	if (!workspace.workspaceFolders) return window.showErrorMessage('Magit: Magit can only be opened inside of a workspace!');
-
 	if (isOpened) return panel.reveal();
-	isOpened = true;
 
 	panel = window.createWebviewPanel('vscode-magit.editor', 'Magit', { viewColumn: ViewColumn.Active }, { enableScripts: true });
 	panel.iconPath = Uri.joinPath(context.extensionUri, 'assets', 'icon.png');
 	panel.webview.onDidReceiveMessage(onMessage);
 
-	let matchGitignore = (_path: string) => true;
-	const updateGitignoreMatcher = async () => {
-		try {
-			const gitignore = await workspace.fs.readFile(Uri.joinPath(workspace.workspaceFolders![0].uri, '.gitignore'));
-			const ignoredPatterns = gitignore.toString().split('\n');
-			matchGitignore = ignore().add(ignoredPatterns).createFilter();
-		} catch (error) {
-			error;
-		}
-	};
-	updateGitignoreMatcher();
-
-	const gitignoreWatcher = workspace.createFileSystemWatcher(new RelativePattern(workspace.workspaceFolders[0], '.gitignore'));
-	gitignoreWatcher.onDidChange(updateGitignoreMatcher);
-
-	const refreshIfNeeded = (file: Uri) => {
-		if (!matchGitignore(file.toString())) return;
-		panel.webview.postMessage({ id: -1, type: 'refresh' });
-	};
-
-	const watcher = workspace.createFileSystemWatcher('**/*');
-	watcher.onDidChange(refreshIfNeeded);
-	watcher.onDidCreate(refreshIfNeeded);
-	watcher.onDidDelete(refreshIfNeeded);
+	const refresh = () => panel.webview.postMessage({ id: -1, type: 'refresh' });
+	const disposeFileWatcher = onTrackedFilesChange(refresh);
 
 	panel.onDidDispose(() => {
 		isOpened = false;
-		gitignoreWatcher.dispose();
-		watcher.dispose();
+		disposeFileWatcher();
 	});
 
 	const page = await workspace.fs.readFile(Uri.joinPath(context.extensionUri, 'page', 'index.html'));
 	panel.webview.html = page.toString();
+	isOpened = true;
 };
 
 const createEditor = (context: ExtensionContext) => () => openMagit(context);
