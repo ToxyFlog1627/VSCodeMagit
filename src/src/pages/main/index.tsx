@@ -1,12 +1,16 @@
-import { FunctionComponent, useEffect, useState } from 'react';
+import { FunctionComponent, useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import Selection, { resetSelection } from '../../components/Selection';
-import Branches from './Branches';
+import Diff from '../Diff';
+import Selection from '../../components/Selection';
 import Files from './Files';
 import Commits from './Commits';
 import Changes from './Changes';
 import GlobalStyles from '../../utils/globalStyles';
-import Diff from '../Diff';
+import CommitMessageEditor from '../CommitMessageEditor';
+import useKeybindings from '../../hooks/useKeybindings';
+import { elements, getClosestElement } from '../../hooks/useSelectable';
+import { refresh } from '../../hooks/useFetch';
+import Branches from './Branches';
 
 const Container = styled.div`
 	margin-left: 5px;
@@ -14,27 +18,54 @@ const Container = styled.div`
 	color: var(--vscode-foreground);
 `;
 
-const MainPage: FunctionComponent = () => {
+type SectionsProps = { resetSelection: () => void };
+
+const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
 	const [diffHash, setDiffHash] = useState<string | null>(null);
+	const [isCommitEditorVisible, setIsCommitEditorVisible] = useState<boolean>(false);
 
 	useEffect(resetSelection);
+
+	useKeybindings({ c: () => setIsCommitEditorVisible(true) });
+
+	if (diffHash) return <Diff hash={diffHash} close={() => setDiffHash(null)} />;
+	if (isCommitEditorVisible) return <CommitMessageEditor close={() => setIsCommitEditorVisible(false)} />;
+	return (
+		<>
+			<Branches />
+			<Files />
+			<Changes stagedChanges={false} />
+			<Changes stagedChanges={true} />
+			<Commits showDiff={(hash: string) => setDiffHash(hash)} />
+		</>
+	);
+};
+
+const MainPage: FunctionComponent = () => {
+	const [selectedIndex, setSelectedIndex] = useState(-1);
+
+	useKeybindings({
+		j: () => setSelectedIndex(Math.min(selectedIndex + 1, elements.length - 1)),
+		k: () => setSelectedIndex(Math.max(selectedIndex - 1, 0)),
+		g: () => setSelectedIndex(0),
+		G: () => setSelectedIndex(elements.length - 1),
+		r: refresh
+	});
+
+	const onClick = (event: MouseEvent) => setSelectedIndex(getClosestElement(event.clientY));
+
+	useEffect(() => {
+		window.addEventListener('click', onClick);
+		return () => window.removeEventListener('click', onClick);
+	});
+
+	const sections = useMemo(() => <Sections resetSelection={() => setSelectedIndex(-1)} />, [setSelectedIndex]);
 
 	return (
 		<Container>
 			<GlobalStyles />
-			<Selection />
-
-			{diffHash ? (
-				<Diff hash={diffHash} closeDiff={() => setDiffHash(null)} />
-			) : (
-				<>
-					<Branches />
-					<Files />
-					<Changes stagedChanges={false} />
-					<Changes stagedChanges={true} />
-					<Commits showDiff={(hash: string) => setDiffHash(hash)} />
-				</>
-			)}
+			<Selection selectedIndex={selectedIndex} />
+			{sections}
 		</Container>
 	);
 };

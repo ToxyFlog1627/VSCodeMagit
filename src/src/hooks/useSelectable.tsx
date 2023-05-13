@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
+import { Keybindings } from './useKeybindings';
 
-export type Keybindings = { [key: string]: () => any };
-export type Element = {
+type Element = {
 	element: HTMLElement;
 	keybindings: Keybindings;
 };
@@ -57,7 +57,9 @@ const useSelectable = () => {
 		updateElementsArray();
 	});
 
-	return (keybindings: Keybindings) => (element: HTMLElement | null) => element && batch.current.push({ keybindings, element });
+	return (keybindings: Keybindings = {}) =>
+		(element: HTMLElement | null) =>
+			element && batch.current.push({ keybindings, element });
 };
 
 export default useSelectable;

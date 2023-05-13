@@ -1,7 +1,8 @@
 import { FunctionComponent, ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import Caret from './Caret';
-import useSelectable, { Keybindings } from '../hooks/useSelectable';
+import useSelectable from '../hooks/useSelectable';
+import { Keybindings } from '../hooks/useKeybindings';
 
 const Container = styled.div<{ indented: boolean }>`
 	position: relative;

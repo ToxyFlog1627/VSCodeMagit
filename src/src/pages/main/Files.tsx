@@ -38,7 +38,7 @@ const FileList: FunctionComponent<{ files: string[] }> = ({ files }) => {
 	return (
 		<Column>
 			{files.map(file => (
-				<p ref={selectable({ S: () => addAllFiles(), s: () => addFile(file) })}>{file}</p>
+				<p ref={selectable({ S: addAllFiles, s: () => addFile(file) })}>{file}</p>
 			))}
 		</Column>
 	);

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import useSelectable from '../hooks/useSelectable';
 import useFetch from '../hooks/useFetch';
 import TextLine from '../components/TextLine';
+import useKeybindings from '../hooks/useKeybindings';
 
 const Container = styled.div`
 	display: flex;
@@ -13,24 +14,25 @@ const Container = styled.div`
 
 type Props = {
 	hash: string;
-	closeDiff: () => void;
+	close: () => void;
 };
 
-const Diff: FunctionComponent<Props> = ({ hash, closeDiff }) => {
+const Diff: FunctionComponent<Props> = ({ hash, close }) => {
 	// TODO: showing changes partially as diff can be 100K+ lines
 	const selectable = useSelectable();
 	const diff = useFetch<string>('diff', { value: hash });
 
-	const keybindings = { q: () => closeDiff() };
+	useKeybindings({ q: close });
 
 	if (diff === null) return null;
+
 	const lines = diff.split('\n');
 	if (lines[0].length === 0) lines.shift();
 	if (lines[lines.length - 1].length === 0) lines.pop();
 	return (
 		<Container>
 			{lines.map(line => (
-				<TextLine ref={selectable(keybindings)}>{line}</TextLine>
+				<TextLine ref={selectable()}>{line}</TextLine>
 			))}
 		</Container>
 	);

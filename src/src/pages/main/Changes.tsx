@@ -1,10 +1,11 @@
 import { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Group from '../../components/Group';
-import useSelectable, { Keybindings } from '../../hooks/useSelectable';
+import useSelectable from '../../hooks/useSelectable';
 import useFetch, { updateSubscribed } from '../../hooks/useFetch';
 import request from '../../utils/api';
 import TextLine from '../../components/TextLine';
+import { Keybindings } from '../../hooks/useKeybindings';
 
 const Column = styled.div`
 	display: flex;
@@ -83,7 +84,7 @@ const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, range
 					ref={selectable(
 						getKeybindings(() => lineAction(i), {
 							' ': () => toggleSelection(i),
-							Escape: () => resetSelection(),
+							Escape: resetSelection,
 							j: () => (i + 1 === lines.length ? resetSelection() : setSelection({ ...selection, offset: selection.offset + 1 })),
 							k: () => (i === 0 ? resetSelection() : setSelection({ ...selection, offset: selection.offset - 1 })),
 							g: resetSelection,
