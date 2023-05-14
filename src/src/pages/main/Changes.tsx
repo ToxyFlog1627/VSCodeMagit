@@ -47,8 +47,8 @@ type HunkProps = {
 
 const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, rangeAction }) => {
 	// TODO: showing changes partially as diff can be 100K+ lines
-	const [selection, setSelection] = useState({ index: -1, offset: 0 });
 	const selectable = useSelectable();
+	const [selection, setSelection] = useState({ index: -1, offset: 0 });
 
 	const resetSelection = () => setSelection({ index: -1, offset: 0 });
 

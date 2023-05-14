@@ -1,6 +1,7 @@
 import { FunctionComponent, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { elements } from '../hooks/useSelectable';
+import useKeybindings from '../hooks/useKeybindings';
 
 const Block = styled.div<{ position: DOMRect }>`
 	position: absolute;
@@ -18,15 +19,12 @@ type Props = { selectedIndex: number };
 const Selection: FunctionComponent<Props> = ({ selectedIndex }) => {
 	const elementRef = useRef(null);
 
-	const onKeyPress = (event: KeyboardEvent) => {
+	const onKey = (event: KeyboardEvent) => {
 		if (selectedIndex < 0 || !elements[selectedIndex].keybindings[event.key]) return;
 		elements[selectedIndex].keybindings[event.key](event);
 	};
 
-	useEffect(() => {
-		window.addEventListener('keypress', onKeyPress);
-		return () => window.removeEventListener('keypress', onKeyPress);
-	});
+	useKeybindings(onKey);
 
 	useEffect(() => {
 		if (!elementRef.current) return;

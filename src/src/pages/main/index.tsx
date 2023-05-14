@@ -48,7 +48,8 @@ const MainPage: FunctionComponent = () => {
 		k: () => selectedIndex > 0 && setSelectedIndex(selectedIndex - 1),
 		g: () => setSelectedIndex(0),
 		G: () => setSelectedIndex(elements.length - 1),
-		r: refresh
+		r: refresh,
+		' ': event => event.target === document.body && event.preventDefault()
 	});
 
 	const onClick = (event: MouseEvent) => setSelectedIndex(getClosestElement(event.clientY));
