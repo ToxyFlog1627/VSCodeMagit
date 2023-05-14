@@ -18,7 +18,7 @@ export const branches = async () => {
 
 	let remote = null;
 	if (remotesNumber > 0) {
-		remote = await getBranchData('@');
+		remote = await getBranchData('@{u}');
 		if (remote === null) return { error: true };
 	}
 

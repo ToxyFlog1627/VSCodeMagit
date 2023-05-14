@@ -15,8 +15,7 @@ const getLineBackground = ({ children, selected }: LineProps): string => {
 	const hexOpacity = selected ? '78' : '20';
 	if (children[0] === '+') return `#00FF00${hexOpacity}`;
 	if (children[0] === '-') return `#FF0000${hexOpacity}`;
-	if (children[0] === ' ') return selected ? `#ffffff20` : 'transparent';
-	return '#ffffff28';
+	return selected ? `#ffffff20` : 'transparent';
 };
 
 const TextLine = styled.p<LineProps>`

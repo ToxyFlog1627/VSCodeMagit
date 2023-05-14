@@ -6,16 +6,14 @@ export const commits = async () => {
 	if (error) return { error: true };
 
 	const lines = data.split('\n');
-	const commits: [string, string][] = [];
-	lines.forEach(line => {
-		if (!line.includes(separator)) {
-			commits[commits.length - 1][1] += '\n' + line;
-			return;
-		}
-
-		commits.push(line.split(separator) as [string, string]);
-	});
+	const commits = lines.filter(line => line.includes(separator)).map(line => line.split(separator) as [string, string]);
 	return { data: commits };
+};
+
+export const commitsNumber = async () => {
+	const { data, error } = await exec('git rev-list --all --count');
+	if (error) return { error: true };
+	return { data: Number(data) };
 };
 
 export const commitMessageTemplate = async () => {
@@ -23,8 +21,8 @@ export const commitMessageTemplate = async () => {
 	return { data };
 };
 
-export const commitsNumber = async () => {
-	const { data, error } = await exec('git rev-list --all --count');
+export const commitMessage = async (message: string) => {
+	const { error } = await exec(`GIT_EDITOR='echo "${message.split('\n').join('\\n')}" >' git commit -e`);
 	if (error) return { error: true };
-	return { data: Number(data) };
+	return { data: null };
 };

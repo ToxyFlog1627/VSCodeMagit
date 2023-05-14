@@ -14,6 +14,13 @@ const Hash = styled.p`
 	color: var(--vscode-disabledForeground);
 `;
 
+const Text = styled.p`
+	width: 100%;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+`;
+
 type HashesProps = Props & { hashes: string[] };
 
 const Hashes: FunctionComponent<HashesProps> = ({ showDiff, hashes }) => {
@@ -39,7 +46,7 @@ const Commits: FunctionComponent<Props> = ({ showDiff }) => {
 			<Hashes hashes={commits.map(([hash]) => hash)} showDiff={showDiff} />
 			<Column>
 				{commits.map(([_, text]) => (
-					<p>{text}</p>
+					<Text>{text.replaceAll('\n', ' ')}</Text>
 				))}
 			</Column>
 		</Group>
