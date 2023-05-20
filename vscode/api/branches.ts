@@ -17,10 +17,7 @@ export const branches = async () => {
 	const remotesNumber = remotes.data.split('\n').length - 1;
 
 	let remote = null;
-	if (remotesNumber > 0) {
-		remote = await getBranchData('@{u}');
-		if (remote === null) return { error: true };
-	}
+	if (remotesNumber > 0) remote = await getBranchData('@{u}');
 
 	return { data: { local, remote } };
 };

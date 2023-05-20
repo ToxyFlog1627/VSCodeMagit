@@ -1,0 +1,86 @@
+import { FunctionComponent } from 'react';
+import styled from 'styled-components';
+import useKeybindings from '../../hooks/useKeybindings';
+import request from '../../utils/api';
+import Popup from './Popup';
+
+const KEYS = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789';
+
+export const assignKeys = <T,>(arr: T[], getKey: (value: T) => string): { [key: string]: T } => {
+	if (arr.length > KEYS.length) {
+		request('showError', "Couldn't assign keys to all options!");
+		return {};
+	}
+
+	const result: { [key: string]: T } = {};
+	const usedKeys = new Set();
+
+	const addIfUnique = (key: string, value: T): boolean => {
+		if (usedKeys.has(key)) return false;
+		usedKeys.add(key);
+		result[key] = value;
+		return true;
+	};
+
+	arr.filter(value => !addIfUnique(getKey(value), value))
+		.filter(value => !addIfUnique(getKey(value).toLowerCase(), value))
+		.filter(value => !addIfUnique(getKey(value).toUpperCase(), value))
+		.forEach(value => {
+			let i = 0;
+			let key = getKey(value);
+			while (usedKeys.has(key)) key = KEYS[i++];
+			usedKeys.add(key);
+			result[key] = value;
+		});
+
+	return result;
+};
+
+const Container = styled.div`
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: wrap;
+	overflow: hidden;
+`;
+
+const Option = styled.p`
+	color: var(--vscode-editorHoverWidget-foreground);
+	cursor: pointer;
+`;
+
+type Props = {
+	close: (value: boolean) => void;
+	keybindings: {
+		[key: string]: {
+			description: string;
+			callback: () => void;
+		};
+	};
+};
+
+const KeybindingPopup: FunctionComponent<Props> = ({ close, keybindings }) => {
+	const onKey = (event: KeyboardEvent) => {
+		if (event.key === 'Escape') close(false);
+		if (!keybindings[event.key]) return;
+		keybindings[event.key].callback();
+		close(true);
+	};
+
+	useKeybindings(onKey);
+
+	return (
+		<Popup close={close}>
+			<Container>
+				{Object.entries(keybindings).map(([key, { description, callback }]) => (
+					<Option onClickCapture={callback}>
+						{key} - {description}
+					</Option>
+				))}
+			</Container>
+		</Popup>
+	);
+};
+
+export default KeybindingPopup;

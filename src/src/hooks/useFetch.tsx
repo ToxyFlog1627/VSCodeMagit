@@ -3,12 +3,14 @@ import request from '../utils/api';
 
 const subscriptions: { [type: string]: (() => Promise<void>)[] } = {};
 
-export const refresh = () => Object.keys(subscriptions).forEach(key => updateSubscribed(key));
+export const refresh = () => Object.keys(subscriptions).forEach(key => refetchType(key));
 
-export const updateSubscribed = (type: string) => {
-	const callbacks = subscriptions[type];
-	if (!callbacks) return;
-	callbacks.forEach(cb => cb());
+export const refetchType = (...types: string[]) => {
+	types.forEach(type => {
+		const callbacks = subscriptions[type];
+		if (!callbacks) return;
+		callbacks.forEach(cb => cb());
+	});
 };
 
 const useFetch = <T,>(type: string, { value, disableAutoRefetch }: { value?: any; disableAutoRefetch?: boolean } = {}): T | null => {

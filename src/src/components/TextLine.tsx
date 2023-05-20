@@ -11,7 +11,7 @@ const getLineColor = ({ children }: LineProps): string => {
 	return 'inherit';
 };
 
-const getLineBackground = ({ children, selected }: LineProps): string => {
+export const getLineBackground = ({ children, selected }: LineProps): string => {
 	const hexOpacity = selected ? '78' : '20';
 	if (children[0] === '+') return `#00FF00${hexOpacity}`;
 	if (children[0] === '-') return `#FF0000${hexOpacity}`;

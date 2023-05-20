@@ -10,8 +10,8 @@ const useKeybindings = (keybindingsOrCallback: Callback | Keybindings) => {
 
 	const onKeyPress = (event: KeyboardEvent) => {
 		if (isCallback) return callback(event);
-
-		if (document.activeElement !== document.body || !keybindings[event.key]) return;
+		if (document.activeElement !== document.body && event.key !== 'Escape') return;
+		if (!keybindings[event.key]) return;
 		keybindings[event.key](event);
 		event.preventDefault();
 	};

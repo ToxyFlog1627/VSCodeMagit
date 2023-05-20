@@ -1,9 +1,9 @@
 import { commands, ExtensionContext } from 'vscode';
-import createEditor from './editor';
+import createWindow from './window';
 
 export let patchPath: string;
 
 export const activate = (context: ExtensionContext) => {
 	patchPath = context.storageUri!.fsPath;
-	context.subscriptions.push(commands.registerCommand('vscode-magit.magit', createEditor(context)));
+	context.subscriptions.push(commands.registerCommand('vscode-magit.magit', createWindow(context)));
 };

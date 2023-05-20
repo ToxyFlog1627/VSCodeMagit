@@ -2,7 +2,7 @@ import { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useFetch from '../hooks/useFetch';
 import useKeybindings from '../hooks/useKeybindings';
-import TextLine from '../components/TextLine';
+import TextLine, { getLineBackground } from '../components/TextLine';
 import request from '../utils/api';
 
 const Container = styled.div`
@@ -15,12 +15,13 @@ const Container = styled.div`
 const EditableTextLine = styled(TextLine).attrs(_ => ({ contentEditable: true }))`
 	outline: none;
 
-	&:hover {
-		filter: brightness(0.9);
+	&:hover,
+	&:focus {
+		filter: brightness(1.1);
 	}
 
 	&:focus {
-		filter: brightness(0.8);
+		background: ${({ children }) => getLineBackground({ children, selected: true })};
 	}
 `;
 
@@ -39,7 +40,14 @@ const CommitMessageEditor: FunctionComponent<Props> = ({ close }) => {
 		close();
 	};
 
-	useKeybindings({ q: close, c: sendChanges, Escape: () => (document.activeElement as HTMLElement | null)?.blur() });
+	useKeybindings({
+		q: close,
+		c: sendChanges,
+		Escape: () => {
+			console.log(document.activeElement);
+			(document.activeElement as HTMLElement | null)?.blur();
+		}
+	});
 
 	if (commitMessage === null) return null;
 

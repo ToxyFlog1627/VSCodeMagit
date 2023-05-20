@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react';
 import Group from '../../components/Group';
-import useFetch, { updateSubscribed } from '../../hooks/useFetch';
+import useFetch, { refetchType } from '../../hooks/useFetch';
 import useSelectable from '../../hooks/useSelectable';
 import request from '../../utils/api';
 import styled from 'styled-components';
@@ -20,8 +20,7 @@ const FileList: FunctionComponent<{ files: string[] }> = ({ files }) => {
 			return;
 		}
 
-		updateSubscribed('untrackedFiles');
-		updateSubscribed('stagedChanges');
+		refetchType('untrackedFiles', 'stagedChanges');
 	};
 
 	const addFile = async (file: string) => {
@@ -31,8 +30,7 @@ const FileList: FunctionComponent<{ files: string[] }> = ({ files }) => {
 			return;
 		}
 
-		updateSubscribed('untrackedFiles');
-		updateSubscribed('stagedChanges');
+		refetchType('untrackedFiles', 'stagedChanges');
 	};
 
 	return (

@@ -69,7 +69,7 @@ export const stageRange = async ({ file, header, index, length }: { file: string
 			if (line[0] === '-') return ` ${line.slice(1)}`;
 			return line;
 		})
-		.filter(line => line !== null) as string[];
+		.filter(line => !!line) as string[];
 	if (!patchBody.some(line => line[0] === '-' || line[0] === '+')) return { data: null };
 
 	const lineNumber = Number(hunk[0].split(',')[0].split('-')[1]);
@@ -135,7 +135,7 @@ export const unstageRange = async ({ file, header, index, length }: { file: stri
 			if (line[0] === '+') return ` ${line.slice(1)}`;
 			return line;
 		})
-		.filter(line => line !== null) as string[];
+		.filter(line => !!line) as string[];
 	if (!patchBody.some(line => line[0] === '-' || line[0] === '+')) return { data: null };
 
 	const lineNumber = Number(hunk[0].split(',')[0].split('-')[1]);

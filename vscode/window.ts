@@ -37,6 +37,6 @@ const openMagit = async (context: ExtensionContext) => {
 	isOpened = true;
 };
 
-const createEditor = (context: ExtensionContext) => () => openMagit(context);
+const createWindow = (context: ExtensionContext) => () => openMagit(context);
 
-export default createEditor;
+export default createWindow;

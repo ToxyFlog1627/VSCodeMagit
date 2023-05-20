@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { updateSubscribed } from '../hooks/useFetch';
+import { refetchType } from '../hooks/useFetch';
 import request from '../utils/api';
 
 const Container = styled.div`
@@ -33,7 +33,7 @@ const Button = styled.button`
 const CreateRepo = () => {
 	const initRepo = () => {
 		request('initRepo');
-		updateSubscribed('isInRepo');
+		refetchType('isInRepo');
 	};
 
 	return (

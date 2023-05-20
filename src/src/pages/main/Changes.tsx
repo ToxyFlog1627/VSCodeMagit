@@ -2,7 +2,7 @@ import { FunctionComponent, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Group from '../../components/Group';
 import useSelectable from '../../hooks/useSelectable';
-import useFetch, { updateSubscribed } from '../../hooks/useFetch';
+import useFetch, { refetchType } from '../../hooks/useFetch';
 import request from '../../utils/api';
 import TextLine from '../../components/TextLine';
 import { Keybindings } from '../../hooks/useKeybindings';
@@ -112,8 +112,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 			return;
 		}
 
-		updateSubscribed('unstagedChanges');
-		updateSubscribed('stagedChanges');
+		refetchType('unstagedChanges', 'stagedChanges');
 	};
 
 	const stageFile = async (file: string) => {
@@ -123,8 +122,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 			return;
 		}
 
-		updateSubscribed('unstagedChanges');
-		updateSubscribed('stagedChanges');
+		refetchType('unstagedChanges', 'stagedChanges');
 	};
 
 	const stageHunk = async (file: string, header: string) => {
@@ -134,8 +132,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 			return;
 		}
 
-		updateSubscribed('unstagedChanges');
-		updateSubscribed('stagedChanges');
+		refetchType('unstagedChanges', 'stagedChanges');
 	};
 
 	const stageRange = async (file: string, header: string, index: number, length: number) => {
@@ -145,8 +142,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 			return;
 		}
 
-		updateSubscribed('unstagedChanges');
-		updateSubscribed('stagedChanges');
+		refetchType('unstagedChanges', 'stagedChanges');
 	};
 
 	const unstageAllFiles = async () => {
@@ -156,9 +152,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 			return;
 		}
 
-		updateSubscribed('stagedChanges');
-		updateSubscribed('untrackedFiles');
-		updateSubscribed('unstagedChanges');
+		refetchType('stagedChanges', 'untrackedFiles', 'unstagedChanges');
 	};
 
 	const unstageFile = async (file: string) => {
@@ -168,9 +162,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 			return;
 		}
 
-		updateSubscribed('stagedChanges');
-		updateSubscribed('untrackedFiles');
-		updateSubscribed('unstagedChanges');
+		refetchType('stagedChanges', 'untrackedFiles', 'unstagedChanges');
 	};
 
 	const unstageHunk = async (file: string, header: string) => {
@@ -180,9 +172,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 			return;
 		}
 
-		updateSubscribed('stagedChanges');
-		updateSubscribed('untrackedFiles');
-		updateSubscribed('unstagedChanges');
+		refetchType('stagedChanges', 'untrackedFiles', 'unstagedChanges');
 	};
 
 	const unstageRange = async (file: string, header: string, index: number, length: number) => {
@@ -192,9 +182,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 			return;
 		}
 
-		updateSubscribed('stagedChanges');
-		updateSubscribed('untrackedFiles');
-		updateSubscribed('unstagedChanges');
+		refetchType('stagedChanges', 'untrackedFiles', 'unstagedChanges');
 	};
 
 	if (!diff || diff.length === 0) return null;
