@@ -8,8 +8,8 @@ const App: FunctionComponent = () => {
 	const repo = useFetch<boolean>('isInRepo');
 	const commitsNumber = useFetch<number>('commitsNumber');
 
-	if (repo === null || commitsNumber === null) return null;
-	if (!repo) return <CreateRepo />;
+	if (repo === null && commitsNumber === null) return null;
+	if (repo === null) return <CreateRepo />;
 	if (commitsNumber === 0) return <EmptyRepo />;
 	return <MainPage />;
 };

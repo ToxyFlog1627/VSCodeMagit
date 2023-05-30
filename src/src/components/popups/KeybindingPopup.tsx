@@ -6,28 +6,36 @@ import Popup from './Popup';
 
 const KEYS = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM0123456789';
 
-export const assignKeys = <T,>(arr: T[], getKey: (value: T) => string): { [key: string]: T } => {
+type PopupKeybindingValue = {
+	description: string;
+	callback: () => void;
+};
+export type PopupKeybindings = { [key: string]: PopupKeybindingValue };
+
+export const toKeybindingWithCallback = (callback: (value: string) => void) => (value: string) => ({ description: value, callback: () => callback(value) });
+
+export const assignKeys = (arr: PopupKeybindingValue[]): PopupKeybindings => {
 	if (arr.length > KEYS.length) {
 		request('showError', "Couldn't assign keys to all options!");
 		return {};
 	}
 
-	const result: { [key: string]: T } = {};
+	const result: PopupKeybindings = {};
 	const usedKeys = new Set();
 
-	const addIfUnique = (key: string, value: T): boolean => {
+	const addIfUnique = (key: string, value: PopupKeybindingValue): boolean => {
 		if (usedKeys.has(key)) return false;
 		usedKeys.add(key);
 		result[key] = value;
 		return true;
 	};
 
-	arr.filter(value => !addIfUnique(getKey(value), value))
-		.filter(value => !addIfUnique(getKey(value).toLowerCase(), value))
-		.filter(value => !addIfUnique(getKey(value).toUpperCase(), value))
+	arr.filter(value => !addIfUnique(value.description[0], value))
+		.filter(value => !addIfUnique(value.description[0].toLowerCase(), value))
+		.filter(value => !addIfUnique(value.description[0].toUpperCase(), value))
 		.forEach(value => {
 			let i = 0;
-			let key = getKey(value);
+			let key = value.description[0];
 			while (usedKeys.has(key)) key = KEYS[i++];
 			usedKeys.add(key);
 			result[key] = value;
@@ -52,12 +60,7 @@ const Option = styled.p`
 
 type Props = {
 	close: (value: boolean) => void;
-	keybindings: {
-		[key: string]: {
-			description: string;
-			callback: () => void;
-		};
-	};
+	keybindings: PopupKeybindings;
 };
 
 const KeybindingPopup: FunctionComponent<Props> = ({ close, keybindings }) => {

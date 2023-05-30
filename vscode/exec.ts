@@ -1,12 +1,10 @@
-import { workspace } from 'vscode';
-import { exec as _exec } from 'child_process';
+import {workspace} from "vscode";
+import {exec as _exec} from "child_process";
 
-const execW = (command: string): Promise<{ data: string; error: boolean; errorMessage: string }> => {
+const exec = (command: string): Promise<{data: string; error: boolean; errorMessage: string}> => {
 	return new Promise(resolve => {
-		_exec(command, { maxBuffer: 1024 * 1024 * 1024, cwd: workspace.workspaceFolders![0].uri.path }, (_error, stdout, stderr) =>
-			resolve({ data: stdout, error: !!stderr, errorMessage: stderr })
-		);
+		_exec(command, {maxBuffer: 1024 * 1024 * 1024, cwd: workspace.workspaceFolders![0].uri.path}, (_error, stdout, stderr) => resolve({data: stdout, error: !!stderr, errorMessage: stderr}));
 	});
 };
 
-export default execW;
+export default exec;

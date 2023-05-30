@@ -23,15 +23,16 @@ const Input = styled.input`
 type Props = {
 	close: (value: boolean) => void;
 	onInput: (value: string) => void;
+	initialValue?: string;
 	label: string;
 };
 
-const InputPopup: FunctionComponent<Props> = ({ close, onInput, label }) => {
-	const [value, setValue] = useState('');
+const InputPopup: FunctionComponent<Props> = ({ close, onInput, initialValue = '', label }) => {
+	const [value, setValue] = useState(initialValue);
 	const inputRef = useRef(null);
 
 	useEffect(() => {
-		if (inputRef.current === null) return;
+		if (!inputRef.current) return;
 		(inputRef.current as HTMLElement).focus();
 	}, [inputRef]);
 
@@ -46,14 +47,7 @@ const InputPopup: FunctionComponent<Props> = ({ close, onInput, label }) => {
 		<Popup close={close}>
 			<Container>
 				<Label>{label} (leave empty to abort):</Label>
-				<Input
-					id="input"
-					ref={inputRef}
-					value={value}
-					onKeyDown={onKeyDown}
-					onChange={event => setValue((event.target as HTMLInputElement).value)}
-					onClick={event => event.stopPropagation()}
-				/>
+				<Input id="input" ref={inputRef} value={value} onKeyDown={onKeyDown} onChange={event => setValue((event.target as HTMLInputElement).value)} onClick={event => event.stopPropagation()} />
 			</Container>
 		</Popup>
 	);

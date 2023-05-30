@@ -1,7 +1,7 @@
 import { FunctionComponent, useState } from 'react';
 import useFetch, { refetchType } from '../../hooks/useFetch';
 import request from '../../utils/api';
-import KeybindingPopup, { assignKeys } from './KeybindingPopup';
+import KeybindingPopup, { PopupKeybindings, assignKeys, toKeybindingWithCallback } from './KeybindingPopup';
 
 enum Stages {
 	DEFAULT,
@@ -29,6 +29,7 @@ const PushPopup: FunctionComponent<Props> = ({ close }) => {
 	if (remotes === null) return null;
 	if (remotes.length === 0) {
 		request('showError', 'There are no remotes!');
+		close();
 		return null;
 	}
 
@@ -41,10 +42,7 @@ const PushPopup: FunctionComponent<Props> = ({ close }) => {
 	}
 
 	if (stage === Stages.REMOTE || stage === Stages.SET_UPSTREAM_REMOTE) {
-		const keybindings = assignKeys(
-			remotesWithBranches.map(value => ({ description: value, callback: () => push(value) })),
-			value => value.description[0]
-		);
+		const keybindings = assignKeys(remotesWithBranches.map(toKeybindingWithCallback(push)));
 		return <KeybindingPopup close={success => !success && close()} keybindings={keybindings} />;
 	}
 
@@ -54,7 +52,7 @@ const PushPopup: FunctionComponent<Props> = ({ close }) => {
 	}
 
 	// TODO: add option: `o - push to other branches`
-	const keybindings: { [key: string]: { description: string; callback: () => void } } = {
+	const keybindings: PopupKeybindings = {
 		e: { description: 'push elsewhere', callback: () => setStage(Stages.REMOTE) },
 		p: { description: 'push and set upstream', callback: () => setStage(Stages.SET_UPSTREAM_REMOTE) }
 	};

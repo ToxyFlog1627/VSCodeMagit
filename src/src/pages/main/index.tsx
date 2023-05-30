@@ -13,6 +13,7 @@ import Diff from '../Diff';
 import CommitMessageEditor from '../CommitMessageEditor';
 import PushPopup from '../../components/popups/PushPopup';
 import RemotePopup from '../../components/popups/RemotePopup';
+import PullPopup from '../../components/popups/PullPopup';
 
 const Container = styled.div`
 	margin-left: 5px;
@@ -29,6 +30,7 @@ enum Window {
 enum Popup {
 	NONE,
 	PUSH_POPUP,
+	PULL_POPUP,
 	REMOTE_POPUP
 }
 
@@ -39,7 +41,12 @@ const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
 	const [popup, setPopup] = useState<Popup>(Popup.NONE);
 	const diffHash = useRef<string>('');
 
-	useKeybindings({ c: () => setWindow(Window.COMMIT_MESSAGE_EDITOR), p: () => setPopup(Popup.PUSH_POPUP), r: () => setPopup(Popup.REMOTE_POPUP) });
+	useKeybindings({
+		c: () => setWindow(Window.COMMIT_MESSAGE_EDITOR),
+		p: () => setPopup(Popup.PUSH_POPUP),
+		P: () => setPopup(Popup.PULL_POPUP),
+		r: () => setPopup(Popup.REMOTE_POPUP)
+	});
 
 	resetSelection();
 
@@ -51,10 +58,13 @@ const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
 		setWindow(Window.DIFF);
 	};
 
+	const closePopup = () => setPopup(Popup.NONE);
+
 	return (
 		<>
-			{popup === Popup.PUSH_POPUP && <PushPopup close={() => setPopup(Popup.NONE)} />}
-			{popup === Popup.REMOTE_POPUP && <RemotePopup close={() => setPopup(Popup.NONE)} />}
+			{popup === Popup.PUSH_POPUP && <PushPopup close={closePopup} />}
+			{popup === Popup.PULL_POPUP && <PullPopup close={closePopup} />}
+			{popup === Popup.REMOTE_POPUP && <RemotePopup close={closePopup} />}
 			<Branches />
 			<Files />
 			<Changes stagedChanges={false} />
