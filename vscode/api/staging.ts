@@ -1,67 +1,83 @@
 import { writeFile } from 'fs/promises';
 import { patchPath } from '../extension';
 import exec from '../exec';
-import * as _parseDiff from 'parse-diff';
+import { execWithoutReturn } from './templates';
 
-const parseDiff = (diff: string) => {
-	return _parseDiff(diff).map(({ chunks, from, to }) => ({
-		from,
-		to,
-		hunks: chunks.map(({ content, changes }) => [content, ...changes.map(({ content }) => content)])
-	}));
-};
-
-const getHunkByHeader = (lines: string[], header: string): string[] | null => {
-	const hunkStart = lines.indexOf(header);
-	if (hunkStart === -1) return null;
-	const hunkEnd = lines.findIndex((line, i) => i > hunkStart && line.startsWith('@@'));
-
-	return hunkEnd === -1 ? lines.slice(hunkStart) : lines.slice(hunkStart, hunkEnd);
-};
-
-export const stagedChanges = async () => {
-	const { data, error } = await exec('git diff --cached');
-	if (error) return { error: true };
-	return { data: parseDiff(data) };
-};
-
-export const stageAllFiles = async () => {
-	const { error } = await exec('git add -u .');
-	if (error) return { error: true };
-	return { data: null };
-};
-
-export const stageFile = async (file: string) => {
-	const { error } = await exec(`git add -u ${file}`);
-	if (error) return { error: true };
-	return { data: null };
-};
-
-export const stageHunk = async ({ file, header }: { file: string; header: string }) => {
-	const { data } = await exec(`git diff ${file}`);
+const getHunkAndFileHeader = async (header: string, command: string): Promise<[string[], string[]] | [null, null]> => {
+	const { data, error } = await exec(command);
+	if (error) return [null, null];
 	const lines = data.split('\n');
 
-	const hunk = getHunkByHeader(lines, header);
-	if (!hunk) return { error: true };
+	const hunkStart = lines.indexOf(header);
+	if (hunkStart === -1) return [null, null];
+	const hunkEnd = lines.findIndex((line, i) => i > hunkStart && line.startsWith('@@'));
+
+	const hunk = hunkEnd === -1 ? lines.slice(hunkStart) : lines.slice(hunkStart, hunkEnd);
+	if (hunk === null) return [null, null];
+
 	const fileHeader = lines.filter(line => line.startsWith('---') || line.startsWith('+++'));
+
+	return [hunk, fileHeader];
+};
+
+export const stageAllFiles = execWithoutReturn('git add -u .');
+export const unstageAllFiles = execWithoutReturn('git reset .');
+
+export const stageFile = execWithoutReturn((file: string) => `git add -u ${file}`);
+export const unstageFile = execWithoutReturn((file: string) => `git reset ${file}`);
+
+type HunkPos = {
+	file: string;
+	header: string;
+};
+
+const writeHunkToPatchFile = async (header: string, command: string): Promise<boolean> => {
+	const [hunk, fileHeader] = await getHunkAndFileHeader(header, command);
+	if (hunk === null) return false;
 
 	const patch = `${fileHeader.join('\n')}\n${hunk.join('\n')}\n`;
 	await writeFile(patchPath, patch);
+
+	return true;
+};
+
+export const stageHunk = async ({ file, header }: HunkPos) => {
+	await writeHunkToPatchFile(header, `git diff ${file}`);
 
 	const { error } = await exec(`git apply --cached '${patchPath}'`);
 	if (error) return { error: true };
 	return { data: null };
 };
+export const unstageHunk = async ({ file, header }: HunkPos) => {
+	await writeHunkToPatchFile(header, `git diff --cached ${file}`);
 
-export const stageRange = async ({ file, header, index, length }: { file: string; header: string; index: number; length: number }) => {
-	const { data } = await exec(`git diff ${file}`);
-	const lines = data.split('\n');
+	const { error } = await exec(`git apply --cached -R '${patchPath}'`);
+	if (error) return { error: true };
+	return { data: null };
+};
 
-	const hunk = getHunkByHeader(lines, header);
-	if (!hunk) return { error: true };
-	const fileHeader = lines.filter(line => line.startsWith('---') || line.startsWith('+++'));
+type RangePos = {
+	file: string;
+	header: string;
+	index: number;
+	length: number;
+};
 
-	const patchBody = hunk
+const writeRangeToPatchFile = async (hunk: string[], fileHeader: string[], body: string[]) => {
+	const lineNumber = Number(hunk[0].split(',')[0].split('-')[1]);
+	const originalLength = body.filter(line => line[0] === '-' || line[0] === ' ').length;
+	const modifiedLength = body.filter(line => line[0] === '+' || line[0] === ' ').length;
+	const hunkHeader = `@@ -${lineNumber},${originalLength} +${lineNumber},${modifiedLength} @@`;
+
+	const patch = `${fileHeader.join('\n')}\n${hunkHeader}\n${body.join('\n')}\n`;
+	await writeFile(patchPath, patch);
+};
+
+export const stageRange = async ({ file, header, index, length }: RangePos) => {
+	const [hunk, fileHeader] = await getHunkAndFileHeader(header, `git diff ${file}`);
+	if (hunk === null) return { error: true };
+
+	const body = hunk
 		.slice(1)
 		.map((line, i) => {
 			if (index <= i && i < index + length) return line;
@@ -69,65 +85,20 @@ export const stageRange = async ({ file, header, index, length }: { file: string
 			if (line[0] === '-') return ` ${line.slice(1)}`;
 			return line;
 		})
-		.filter(line => !!line) as string[];
-	if (!patchBody.some(line => line[0] === '-' || line[0] === '+')) return { data: null };
+		.filter(line => line !== null) as string[];
+	if (!body.some(line => line[0] === '-' || line[0] === '+')) return { data: null };
 
-	const lineNumber = Number(hunk[0].split(',')[0].split('-')[1]);
-	const originalLength = patchBody.filter(line => line[0] === '-' || line[0] === ' ').length;
-	const modifiedLength = patchBody.filter(line => line[0] === '+' || line[0] === ' ').length;
-	const hunkHeader = `@@ -${lineNumber},${originalLength} +${lineNumber},${modifiedLength} @@`;
-
-	const patch = `${fileHeader.join('\n')}\n${hunkHeader}\n${patchBody.join('\n')}\n`;
-	await writeFile(patchPath, patch);
+	await writeRangeToPatchFile(hunk, body, fileHeader);
 
 	const { error } = await exec(`git apply --cached '${patchPath}'`);
 	if (error) return { error: true };
 	return { data: null };
 };
+export const unstageRange = async ({ file, header, index, length }: RangePos) => {
+	const [hunk, fileHeader] = await getHunkAndFileHeader(header, `git diff --cached ${file}`);
+	if (hunk === null) return { error: true };
 
-export const unstagedChanges = async () => {
-	const { data, error } = await exec('git diff');
-	if (error) return { error: true };
-	return { data: parseDiff(data) };
-};
-
-export const unstageAllFiles = async () => {
-	const { error } = await exec('git reset .');
-	if (error) return { error: true };
-	return { data: null };
-};
-
-export const unstageFile = async (file: string) => {
-	const { error } = await exec(`git reset ${file}`);
-	if (error) return { error: true };
-	return { data: null };
-};
-
-export const unstageHunk = async ({ file, header }: { file: string; header: string }) => {
-	const { data } = await exec(`git diff --cached ${file}`);
-	const lines = data.split('\n');
-
-	const hunk = getHunkByHeader(lines, header);
-	if (!hunk) return { error: true };
-	const fileHeader = lines.filter(line => line.startsWith('---') || line.startsWith('+++'));
-
-	const patch = `${fileHeader.join('\n')}\n${hunk.join('\n')}\n`;
-	await writeFile(patchPath, patch);
-
-	const { error } = await exec(`git apply --cached -R '${patchPath}'`);
-	if (error) return { error: true };
-	return { data: null };
-};
-
-export const unstageRange = async ({ file, header, index, length }: { file: string; header: string; index: number; length: number }) => {
-	const { data } = await exec(`git diff --cached ${file}`);
-	const lines = data.split('\n');
-
-	const hunk = getHunkByHeader(lines, header);
-	if (!hunk) return { error: true };
-	const fileHeader = lines.filter(line => line.startsWith('---') || line.startsWith('+++'));
-
-	const patchBody = hunk
+	const body = hunk
 		.slice(1)
 		.map((line, i) => {
 			if (index <= i && i < index + length) return line;
@@ -135,16 +106,10 @@ export const unstageRange = async ({ file, header, index, length }: { file: stri
 			if (line[0] === '+') return ` ${line.slice(1)}`;
 			return line;
 		})
-		.filter(line => !!line) as string[];
-	if (!patchBody.some(line => line[0] === '-' || line[0] === '+')) return { data: null };
+		.filter(line => line !== null) as string[];
+	if (!body.some(line => line[0] === '-' || line[0] === '+')) return { data: null };
 
-	const lineNumber = Number(hunk[0].split(',')[0].split('-')[1]);
-	const originalLength = patchBody.filter(line => line[0] === '-' || line[0] === ' ').length;
-	const modifiedLength = patchBody.filter(line => line[0] === '+' || line[0] === ' ').length;
-	const hunkHeader = `@@ -${lineNumber},${originalLength} +${lineNumber},${modifiedLength} @@`;
-
-	const patch = `${fileHeader.join('\n')}\n${hunkHeader}\n${patchBody.join('\n')}\n`;
-	await writeFile(patchPath, patch);
+	await writeRangeToPatchFile(hunk, body, fileHeader);
 
 	const { error } = await exec(`git apply -R --cached '${patchPath}'`);
 	if (error) return { error: true };

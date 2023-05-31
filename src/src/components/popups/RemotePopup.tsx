@@ -81,7 +81,7 @@ const RemotePopup: FunctionComponent<Props> = ({ close }) => {
 	if (stage === Stages.UPDATE) {
 		if (selectedRemote === null) {
 			const keybindings = assignKeys(remotes.map(toKeybindingWithCallback(setSelectedRemote)));
-			return <KeybindingPopup close={close} keybindings={keybindings} />;
+			return <KeybindingPopup close={success => !success && close()} keybindings={keybindings} />;
 		}
 
 		if (selectedRemoteUrl === null) return null;

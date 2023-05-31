@@ -76,11 +76,13 @@ const KeybindingPopup: FunctionComponent<Props> = ({ close, keybindings }) => {
 	return (
 		<Popup close={close}>
 			<Container>
-				{Object.entries(keybindings).map(([key, { description, callback }]) => (
-					<Option onClickCapture={callback}>
-						{key} - {description}
-					</Option>
-				))}
+				{Object.entries(keybindings)
+					.sort((a, b) => a[0].charCodeAt(0) - b[0].charCodeAt(0))
+					.map(([key, { description, callback }]) => (
+						<Option onClickCapture={callback}>
+							{key} - {description}
+						</Option>
+					))}
 			</Container>
 		</Popup>
 	);

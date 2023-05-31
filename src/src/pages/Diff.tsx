@@ -18,20 +18,18 @@ type Props = {
 };
 
 const Diff: FunctionComponent<Props> = ({ hash, close }) => {
-	// TODO: showing changes partially as diff can be 100K+ lines
 	const selectable = useSelectable();
-	const diff = useFetch<string>('diff', { value: hash });
+	const diff = useFetch<string[]>('diff', { value: hash });
 
 	useKeybindings({ q: close });
 
 	if (diff === null) return null;
 
-	const lines = diff.split('\n');
-	if (lines[0].length === 0) lines.shift();
-	if (lines[lines.length - 1].length === 0) lines.pop();
+	if (diff[0].length === 0) diff.shift();
+	if (diff[diff.length - 1].length === 0) diff.pop();
 	return (
 		<Container>
-			{lines.map(line => (
+			{diff.map(line => (
 				<TextLine ref={selectable()}>{line}</TextLine>
 			))}
 		</Container>

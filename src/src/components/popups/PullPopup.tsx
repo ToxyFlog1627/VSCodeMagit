@@ -5,7 +5,7 @@ import KeybindingPopup, { assignKeys, toKeybindingWithCallback } from './Keybind
 
 type Props = { close: () => void };
 
-const PushPopup: FunctionComponent<Props> = ({ close }) => {
+const PullPopup: FunctionComponent<Props> = ({ close }) => {
 	const remotes = useFetch<string[]>('remotes');
 	const upstreamRemote = useFetch<string>('upstreamRemote');
 
@@ -26,4 +26,4 @@ const PushPopup: FunctionComponent<Props> = ({ close }) => {
 	return <KeybindingPopup close={close} keybindings={assignKeys(keybindings)} />;
 };
 
-export default PushPopup;
+export default PullPopup;

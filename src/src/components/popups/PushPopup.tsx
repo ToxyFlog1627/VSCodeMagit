@@ -5,16 +5,18 @@ import KeybindingPopup, { PopupKeybindings, assignKeys, toKeybindingWithCallback
 
 enum Stages {
 	DEFAULT,
-	UPSTREAM,
 	REMOTE,
-	SET_UPSTREAM_REMOTE
+	SET_UPSTREAM_REMOTE,
+	REMOTE_OTHER_BRANCH
 }
 
 type Props = { close: () => void };
 
 const PushPopup: FunctionComponent<Props> = ({ close }) => {
 	const [stage, setStage] = useState<Stages>(Stages.DEFAULT);
+	const [selectedRemote, setSelectedRemote] = useState<string | null>(null);
 	const remotes = useFetch<string[]>('remotes');
+	const branches = useFetch<string[]>('branches');
 	const remotesWithBranches = useFetch<string[]>('remotesWithBranches');
 	const upstreamRemote = useFetch<string>('upstreamRemote');
 
@@ -33,12 +35,16 @@ const PushPopup: FunctionComponent<Props> = ({ close }) => {
 		return null;
 	}
 
-	// TODO: if (stage === Stages.REMOTE_OTHER_BRANCH) { return null; }
-
 	if (remotesWithBranches === null) return null;
-	if (remotesWithBranches.length === 0) {
-		// TODO: it should be like `push to other branches`
-		return null;
+	if (stage === Stages.REMOTE_OTHER_BRANCH || remotesWithBranches.length === 0) {
+		if (selectedRemote === null) {
+			const keybindings = assignKeys(remotes.map(toKeybindingWithCallback(setSelectedRemote)));
+			return <KeybindingPopup close={success => !success && close()} keybindings={keybindings} />;
+		}
+
+		if (branches === null) return null;
+		const keybindings = assignKeys(branches.map(toKeybindingWithCallback(branch => push(selectedRemote, branch))));
+		return <KeybindingPopup close={success => !success && close()} keybindings={keybindings} />;
 	}
 
 	if (stage === Stages.REMOTE || stage === Stages.SET_UPSTREAM_REMOTE) {
@@ -46,18 +52,13 @@ const PushPopup: FunctionComponent<Props> = ({ close }) => {
 		return <KeybindingPopup close={success => !success && close()} keybindings={keybindings} />;
 	}
 
-	if (upstreamRemote && stage === Stages.UPSTREAM) {
-		push(upstreamRemote);
-		return null;
-	}
-
-	// TODO: add option: `o - push to other branches`
 	const keybindings: PopupKeybindings = {
 		e: { description: 'push elsewhere', callback: () => setStage(Stages.REMOTE) },
-		p: { description: 'push and set upstream', callback: () => setStage(Stages.SET_UPSTREAM_REMOTE) }
+		p: { description: 'push and set upstream', callback: () => setStage(Stages.SET_UPSTREAM_REMOTE) },
+		o: { description: 'push to other branches', callback: () => setStage(Stages.REMOTE_OTHER_BRANCH) }
 	};
 
-	if (upstreamRemote) keybindings['u'] = { description: `push upstream (${upstreamRemote})`, callback: () => setStage(Stages.UPSTREAM) };
+	if (upstreamRemote) keybindings['u'] = { description: `push upstream (${upstreamRemote})`, callback: () => push(upstreamRemote) };
 	return <KeybindingPopup close={success => !success && close()} keybindings={keybindings} />;
 };
 

@@ -46,7 +46,6 @@ type HunkProps = {
 };
 
 const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, rangeAction }) => {
-	// TODO: showing changes partially as diff can be 100K+ lines
 	const selectable = useSelectable();
 	const [selection, setSelection] = useState({ index: -1, offset: 0 });
 
@@ -72,9 +71,7 @@ const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, range
 	};
 
 	const isSelected = (index: number) =>
-		selection.index === -1
-			? false
-			: Math.min(selection.index, selection.index + selection.offset) <= index && index <= Math.max(selection.index, selection.index + selection.offset);
+		selection.index === -1 ? false : Math.min(selection.index, selection.index + selection.offset) <= index && index <= Math.max(selection.index, selection.index + selection.offset);
 
 	return (
 		<HunkContainer>
@@ -185,7 +182,7 @@ const Changes: FunctionComponent<Props> = ({ stagedChanges }) => {
 		refetchType('stagedChanges', 'untrackedFiles', 'unstagedChanges');
 	};
 
-	if (!diff || diff.length === 0) return null;
+	if (diff === null || diff.length === 0) return null;
 
 	const title = stagedChanges ? 'Staged changes' : 'Unstaged changes';
 	const globalKey = stagedChanges ? 'U' : 'S';
