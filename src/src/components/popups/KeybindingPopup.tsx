@@ -71,7 +71,7 @@ const KeybindingPopup: FunctionComponent<Props> = ({ close, keybindings }) => {
 		close(true);
 	};
 
-	useKeybindings(onKey);
+	useKeybindings(onKey, true);
 
 	return (
 		<Popup close={close}>

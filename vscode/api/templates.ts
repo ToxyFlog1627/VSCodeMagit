@@ -9,7 +9,7 @@ export const execAndReturn =
 	async (argument: any) => {
 		const { data, error } = await exec(getCommand(command, argument));
 		if (!ignoreError && error) return { error: true };
-		return { data: processData ? processData(data) : data };
+		return { data: processData(data) };
 	};
 
 export const execWithoutReturn = (command: Command) => async (argument: any) => {

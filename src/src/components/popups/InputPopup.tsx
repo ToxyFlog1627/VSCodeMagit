@@ -33,7 +33,7 @@ const InputPopup: FunctionComponent<Props> = ({ close, onInput, initialValue = '
 
 	useEffect(() => {
 		if (!inputRef.current) return;
-		(inputRef.current as HTMLElement).focus();
+		setTimeout(() => (inputRef.current! as HTMLElement).focus(), 50);
 	}, [inputRef]);
 
 	const onKeyDown = (event: KeyboardEvent) => {
@@ -41,6 +41,7 @@ const InputPopup: FunctionComponent<Props> = ({ close, onInput, initialValue = '
 		if (value === '') return close(false);
 		onInput(value);
 		setValue('');
+		close(true);
 	};
 
 	return (

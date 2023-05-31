@@ -71,7 +71,7 @@ const BranchPopup: FunctionComponent<Props> = ({ close }) => {
 		b: { description: 'checkout', callback: () => setStage(Stages.CHECKOUT) },
 		c: { description: 'create branch', callback: () => setStage(Stages.CREATE) },
 		r: { description: 'rename branch', callback: () => setStage(Stages.RENAME) },
-		d: { description: 'delete remote', callback: () => setStage(Stages.DEFAULT) }
+		d: { description: 'delete remote', callback: () => setStage(Stages.DELETE) }
 	};
 	return <KeybindingPopup close={success => !success && close()} keybindings={keybindings} />;
 };

@@ -1,5 +1,6 @@
 import { FunctionComponent, useEffect } from 'react';
 import styled from 'styled-components';
+import useKeybindings from '../../hooks/useKeybindings';
 
 const Container = styled.div`
 	position: fixed;
@@ -18,6 +19,8 @@ type Props = {
 };
 
 const Popup: FunctionComponent<Props> = ({ close, children }) => {
+	useKeybindings({ Escape: () => close(false) });
+
 	useEffect(() => {
 		window.addEventListener('click', () => close(false));
 		return () => window.removeEventListener('click', () => close(false));

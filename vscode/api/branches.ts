@@ -1,5 +1,5 @@
 import exec from '../exec';
-import { execWithoutReturn } from './templates';
+import { execAndReturn, execWithoutReturn } from './templates';
 
 const getBranchData = async (selector: string): Promise<{ commit: string; branch: string } | null> => {
 	const branch = await exec(`git rev-parse --abbrev-ref --symbolic-full-name ${selector}`);
@@ -11,7 +11,7 @@ const getBranchData = async (selector: string): Promise<{ commit: string; branch
 	return { commit: commit.data.slice(0, -1), branch: branch.data.slice(0, -1) };
 };
 
-export const branches = async () => {
+export const commitBranches = async () => {
 	const local = await getBranchData('@');
 	if (local === null) return { data: null };
 
@@ -25,7 +25,8 @@ export const branches = async () => {
 	return { data: { local, remote } };
 };
 
-export const createRemote = execWithoutReturn((branch: string) => `git branch ${branch}`);
-export const renameRemote = execWithoutReturn(({ from, to }: { from: string; to: string }) => `git branch -m ${from} ${to}`);
-export const deleteRemote = execWithoutReturn((branch: string) => `git branch -d ${branch}`);
+export const branches = execAndReturn('git branch -l', data => data.split('\n').slice(0, -1).map(line => line.slice(2))); // prettier-ignore
+export const createBranch = execWithoutReturn((branch: string) => `git branch ${branch}`);
+export const renameBranch = execWithoutReturn(({ from, to }: { from: string; to: string }) => `git branch -m ${from} ${to}`);
+export const deleteBranch = execWithoutReturn((branch: string) => `git branch -d ${branch}`);
 export const checkout = execWithoutReturn((branch: string) => `git checkout ${branch}`);

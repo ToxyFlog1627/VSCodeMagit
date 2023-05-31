@@ -20,7 +20,7 @@ type Branch = {
 };
 
 const Branches: FunctionComponent = () => {
-	const branches = useFetch<{ [key: string]: Branch }>('branches');
+	const branches = useFetch<{ [key: string]: Branch }>('commitBranches');
 
 	if (!branches) return null;
 	return (
