@@ -14,6 +14,7 @@ import CommitMessageEditor from '../CommitMessageEditor';
 import PushPopup from '../../components/popups/PushPopup';
 import RemotePopup from '../../components/popups/RemotePopup';
 import PullPopup from '../../components/popups/PullPopup';
+import BranchPopup from '../../components/popups/BranchPopup';
 
 const Container = styled.div`
 	margin-left: 5px;
@@ -31,7 +32,8 @@ enum Popup {
 	NONE,
 	PUSH_POPUP,
 	PULL_POPUP,
-	REMOTE_POPUP
+	REMOTE_POPUP,
+	BRANCH_POPUP
 }
 
 type SectionsProps = { resetSelection: () => void };
@@ -42,6 +44,7 @@ const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
 	const diffHash = useRef<string>('');
 
 	useKeybindings({
+		b: () => setPopup(Popup.BRANCH_POPUP),
 		c: () => setWindow(Window.COMMIT_MESSAGE_EDITOR),
 		p: () => setPopup(Popup.PUSH_POPUP),
 		P: () => setPopup(Popup.PULL_POPUP),
@@ -62,6 +65,7 @@ const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
 
 	return (
 		<>
+			{popup === Popup.BRANCH_POPUP && <BranchPopup close={closePopup} />}
 			{popup === Popup.PUSH_POPUP && <PushPopup close={closePopup} />}
 			{popup === Popup.PULL_POPUP && <PullPopup close={closePopup} />}
 			{popup === Popup.REMOTE_POPUP && <RemotePopup close={closePopup} />}

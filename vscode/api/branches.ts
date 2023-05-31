@@ -1,4 +1,5 @@
 import exec from '../exec';
+import { execWithoutReturn } from './templates';
 
 const getBranchData = async (selector: string): Promise<{ commit: string; branch: string } | null> => {
 	const branch = await exec(`git rev-parse --abbrev-ref --symbolic-full-name ${selector}`);
@@ -23,3 +24,8 @@ export const branches = async () => {
 
 	return { data: { local, remote } };
 };
+
+export const createRemote = execWithoutReturn((branch: string) => `git branch ${branch}`);
+export const renameRemote = execWithoutReturn(({ from, to }: { from: string; to: string }) => `git branch -m ${from} ${to}`);
+export const deleteRemote = execWithoutReturn((branch: string) => `git branch -d ${branch}`);
+export const checkout = execWithoutReturn((branch: string) => `git checkout ${branch}`);

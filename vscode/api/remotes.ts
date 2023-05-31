@@ -30,6 +30,7 @@ export const remoteUrl = async (remote: null | string) => {
 
 export const createRemote = execWithoutReturn(({ name, url }: { name: string; url: string }) => `git remote add ${name} ${url}`);
 export const renameRemote = execWithoutReturn(({ from, to }: { from: string; to: string }) => `git remote rename ${from} ${to}`);
+export const deleteRemote = execWithoutReturn((branch: string) => `git remote remove ${branch}`);
 export const setRemoteUrl = execWithoutReturn(({ name, url }: { name: string; url: string }) => `git remote set-url ${name} ${url}`);
 export const pull = execWithoutReturn((remote: string) => `git pull ${remote}`);
 
