@@ -4,3 +4,4 @@ node_modules
 src/node_modules
 page
 .vscode/settings.json
+*.vsix

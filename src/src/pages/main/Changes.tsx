@@ -86,7 +86,8 @@ const Hunk: FunctionComponent<HunkProps> = ({ file, lines, getKeybindings, range
 							k: () => (i === 0 ? resetSelection() : setSelection({ ...selection, offset: selection.offset - 1 })),
 							g: resetSelection,
 							G: resetSelection
-						})
+						}),
+						true
 					)}
 				>
 					{line}

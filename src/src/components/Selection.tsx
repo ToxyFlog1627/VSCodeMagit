@@ -22,7 +22,7 @@ const Selection: FunctionComponent<Props> = ({ selectedIndex }) => {
 	const onKey = (event: KeyboardEvent) => {
 		if (selectedIndex < 0 || !elements[selectedIndex].keybindings[event.key]) return false;
 		elements[selectedIndex].keybindings[event.key](event);
-		return true;
+		return !elements[selectedIndex].passthrough;
 	};
 
 	useKeybindings(onKey, 5);

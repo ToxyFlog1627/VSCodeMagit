@@ -10,6 +10,8 @@ const onKeyPress = (event: KeyboardEvent) => {
 	for (let i = callbacks.length - 1; i >= 0; i--) {
 		if (!callbacks[i]) continue;
 		for (const [, callback] of Object.entries(callbacks[i])) {
+			if (event.target === document.body && event.key === ' ') event.preventDefault();
+
 			if (typeof callback === 'function') {
 				if (callback(event)) return;
 				else continue;
@@ -21,7 +23,8 @@ const onKeyPress = (event: KeyboardEvent) => {
 			if (!keybindings[event.key]) continue;
 
 			event.preventDefault();
-			return keybindings[event.key](event);
+			keybindings[event.key](event);
+			return;
 		}
 	}
 };
@@ -35,7 +38,6 @@ const useKeybindings = (callback: Callback | Keybindings, priority: number = 0) 
 	const id = useRef(_id++);
 
 	useEffect(() => {
-		console.log(callbacks);
 		if (!callbacks[priority]) callbacks[priority] = {};
 		callbacks[priority][id.current] = callback;
 

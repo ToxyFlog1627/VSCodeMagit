@@ -4,6 +4,7 @@ import { Keybindings } from './useKeybindings';
 type Element = {
 	element: HTMLElement;
 	keybindings: Keybindings;
+	passthrough: boolean;
 };
 
 let _id = 0;
@@ -57,9 +58,9 @@ const useSelectable = () => {
 		updateElementsArray();
 	});
 
-	return (keybindings: Keybindings = {}) =>
+	return (keybindings: Keybindings = {}, passthrough = false) =>
 		(element: HTMLElement | null) =>
-			element && batch.current.push({ keybindings, element });
+			element && batch.current.push({ keybindings, passthrough, element });
 };
 
 export default useSelectable;

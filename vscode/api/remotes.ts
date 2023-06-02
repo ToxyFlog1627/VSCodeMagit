@@ -13,7 +13,7 @@ export const upstreamRemote = async () => {
 
 export const remotes = execAndReturn("git remote -v | grep '(push)'", data => data.split('\n').map(remote => remote.split('  ')[0]));
 
-export const remotesWithBranches = execAndReturn('git ranch -a', data =>
+export const remotesWithBranches = execAndReturn('git branch -a', data =>
 	data
 		.split('\n')
 		.map(remote => remote.slice(2))

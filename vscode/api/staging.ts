@@ -88,9 +88,10 @@ export const stageRange = async ({ file, header, index, length }: RangePos) => {
 		.filter(line => line !== null) as string[];
 	if (!body.some(line => line[0] === '-' || line[0] === '+')) return { data: null };
 
-	await writeRangeToPatchFile(hunk, body, fileHeader);
+	await writeRangeToPatchFile(hunk, fileHeader, body);
 
 	const { error } = await exec(`git apply --cached '${patchPath}'`);
+	console.log(patchPath);
 	if (error) return { error: true };
 	return { data: null };
 };
@@ -109,7 +110,7 @@ export const unstageRange = async ({ file, header, index, length }: RangePos) =>
 		.filter(line => line !== null) as string[];
 	if (!body.some(line => line[0] === '-' || line[0] === '+')) return { data: null };
 
-	await writeRangeToPatchFile(hunk, body, fileHeader);
+	await writeRangeToPatchFile(hunk, fileHeader, body);
 
 	const { error } = await exec(`git apply -R --cached '${patchPath}'`);
 	if (error) return { error: true };

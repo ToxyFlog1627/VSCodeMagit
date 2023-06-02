@@ -24,7 +24,7 @@ const PushPopup: FunctionComponent<Props> = ({ close }) => {
 		if (!branch) [remote, branch] = remote.split('/');
 		const { error } = await request('push', { remote, branch, setUpstream: stage === Stages.SET_UPSTREAM_REMOTE });
 		if (error) return request('showError', `Couldn't push changes to ${remote}/${branch}!`);
-		refetchType('branches', 'remotes', 'remotesWithBranches', 'upstreamRemote');
+		refetchType('commitBranches', 'remotes', 'remotesWithBranches', 'upstreamRemote');
 		close();
 	};
 
