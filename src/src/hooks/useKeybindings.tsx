@@ -1,55 +1,48 @@
 import { useEffect, useRef } from 'react';
-import request from '../utils/api';
 
-type Callback = (event: KeyboardEvent) => void;
-export type Keybindings = { [key: string]: Callback };
+type Callback = (event: KeyboardEvent) => boolean;
+export type Keybindings = { [key: string]: (event: KeyboardEvent) => void };
 
 let _id = 0;
-let controllingId = -1;
+const callbacks: { [key: number]: Callback | Keybindings }[] = [];
 
-const useKeybindings = (keybindingsOrCallback: Callback | Keybindings, control: boolean = false) => {
-	const isCallback = typeof keybindingsOrCallback === 'function';
-	const callback = keybindingsOrCallback as Callback;
-	const keybindings = keybindingsOrCallback as Keybindings;
+const onKeyPress = (event: KeyboardEvent) => {
+	for (let i = callbacks.length - 1; i >= 0; i--) {
+		if (!callbacks[i]) continue;
+		for (const [, callback] of Object.entries(callbacks[i])) {
+			if (typeof callback === 'function') {
+				if (callback(event)) return;
+				else continue;
+			}
 
+			if (document.activeElement !== document.body && event.key !== 'Escape') continue;
+
+			const keybindings = callback as Keybindings;
+			if (!keybindings[event.key]) continue;
+
+			event.preventDefault();
+			return keybindings[event.key](event);
+		}
+	}
+};
+
+const onKeyDown = (event: KeyboardEvent) => event.key === 'Escape' && onKeyPress(event);
+
+window.addEventListener('keypress', onKeyPress);
+window.addEventListener('keydown', onKeyDown);
+
+const useKeybindings = (callback: Callback | Keybindings, priority: number = 0) => {
 	const id = useRef(_id++);
 
-	const canAccess = () => controllingId === -1 || controllingId === id.current;
-
-	const onKeyPress = (event: KeyboardEvent) => {
-		if (!canAccess()) return;
-
-		if (isCallback) return callback(event);
-		if (document.activeElement !== document.body && event.key !== 'Escape') return;
-		if (!keybindings[event.key]) return;
-
-		keybindings[event.key](event);
-		event.preventDefault();
-	};
-
-	const onKeyDown = (event: KeyboardEvent) => event.key === 'Escape' && onKeyPress(event);
-
 	useEffect(() => {
-		window.addEventListener('keypress', onKeyPress);
-		window.addEventListener('keydown', onKeyDown);
+		console.log(callbacks);
+		if (!callbacks[priority]) callbacks[priority] = {};
+		callbacks[priority][id.current] = callback;
+
 		return () => {
-			window.removeEventListener('keypress', onKeyPress);
-			window.removeEventListener('keydown', onKeyDown);
+			delete callbacks[priority][id.current];
 		};
 	});
-
-	useEffect(() => {
-		if (!control) return;
-		if (!canAccess()) {
-			request('showError', "Two useKeybindings can't be controlling simultaneously!");
-			return;
-		}
-
-		controllingId = id.current;
-		return () => {
-			controllingId = -1;
-		};
-	}, []);
 };
 
 export default useKeybindings;

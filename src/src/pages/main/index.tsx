@@ -36,12 +36,13 @@ enum Popup {
 	BRANCH_POPUP
 }
 
-type SectionsProps = { resetSelection: () => void };
+type DefaultPageProps = {
+	showDiff: (hash: string) => void;
+	setWindow: (window: Window) => void;
+};
 
-const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
-	const [window, setWindow] = useState<Window>(Window.DEFAULT);
+const DefaultPage: FunctionComponent<DefaultPageProps> = ({ showDiff, setWindow }) => {
 	const [popup, setPopup] = useState<Popup>(Popup.NONE);
-	const diffHash = useRef<string>('');
 
 	useKeybindings({
 		b: () => setPopup(Popup.BRANCH_POPUP),
@@ -50,16 +51,6 @@ const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
 		P: () => setPopup(Popup.PULL_POPUP),
 		r: () => setPopup(Popup.REMOTE_POPUP)
 	});
-
-	resetSelection();
-
-	if (window === Window.DIFF) return <Diff hash={diffHash.current} close={() => setWindow(Window.DEFAULT)} />;
-	if (window === Window.COMMIT_MESSAGE_EDITOR) return <CommitMessageEditor close={() => setWindow(Window.DEFAULT)} />;
-
-	const showDiff = (hash: string) => {
-		diffHash.current = hash;
-		setWindow(Window.DIFF);
-	};
 
 	const closePopup = () => setPopup(Popup.NONE);
 
@@ -76,6 +67,27 @@ const Sections: FunctionComponent<SectionsProps> = ({ resetSelection }) => {
 			<Commits showDiff={showDiff} />
 		</>
 	);
+};
+
+type PageProps = { resetSelection: () => void };
+
+const Page: FunctionComponent<PageProps> = ({ resetSelection }) => {
+	const [window, setWindow] = useState<Window>(Window.DEFAULT);
+	const commitHashRef = useRef<string>('');
+
+	resetSelection();
+
+	const closeWindow = () => setWindow(Window.DEFAULT);
+
+	if (window === Window.DIFF) return <Diff hash={commitHashRef.current} close={closeWindow} />;
+	if (window === Window.COMMIT_MESSAGE_EDITOR) return <CommitMessageEditor close={closeWindow} />;
+
+	const showDiff = (hash: string) => {
+		commitHashRef.current = hash;
+		setWindow(Window.DIFF);
+	};
+
+	return <DefaultPage showDiff={showDiff} setWindow={setWindow} />;
 };
 
 const MainPage: FunctionComponent = () => {
@@ -97,13 +109,13 @@ const MainPage: FunctionComponent = () => {
 		return () => window.removeEventListener('click', onClick);
 	});
 
-	const sections = useMemo(() => <Sections resetSelection={() => setSelectedIndex(-1)} />, [setSelectedIndex]);
+	const page = useMemo(() => <Page resetSelection={() => setSelectedIndex(-1)} />, [setSelectedIndex]);
 
 	return (
 		<Container>
 			<GlobalStyles />
 			<Selection selectedIndex={selectedIndex} />
-			{sections}
+			{page}
 		</Container>
 	);
 };

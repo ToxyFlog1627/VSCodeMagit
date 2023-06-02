@@ -1,20 +1,23 @@
+import { ReactNode } from 'react';
 import styled from 'styled-components';
 
 type LineProps = {
-	children: string;
+	children: ReactNode;
 	selected?: boolean;
 };
 
+const getFirstChar = (children: ReactNode) => (typeof children === 'string' ? children[0] : ' ');
+
 const getLineColor = ({ children }: LineProps): string => {
-	if (children[0] === '+') return 'var(--vscode-gitDecoration-addedResourceForeground)';
-	if (children[0] === '-') return 'var(--vscode-gitDecoration-deletedResourceForeground)';
+	if (getFirstChar(children) === '+') return 'var(--vscode-gitDecoration-addedResourceForeground)';
+	if (getFirstChar(children) === '-') return 'var(--vscode-gitDecoration-deletedResourceForeground)';
 	return 'inherit';
 };
 
 export const getLineBackground = ({ children, selected }: LineProps): string => {
 	const hexOpacity = selected ? '78' : '20';
-	if (children[0] === '+') return `#00FF00${hexOpacity}`;
-	if (children[0] === '-') return `#FF0000${hexOpacity}`;
+	if (getFirstChar(children) === '+') return `#00FF00${hexOpacity}`;
+	if (getFirstChar(children) === '-') return `#FF0000${hexOpacity}`;
 	return selected ? `#ffffff20` : 'transparent';
 };
 

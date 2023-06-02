@@ -66,12 +66,13 @@ type Props = {
 const KeybindingPopup: FunctionComponent<Props> = ({ close, keybindings }) => {
 	const onKey = (event: KeyboardEvent) => {
 		if (event.key === 'Escape') close(false);
-		if (!keybindings[event.key]) return;
+		if (!keybindings[event.key]) return false;
 		keybindings[event.key].callback();
 		close(true);
+		return true;
 	};
 
-	useKeybindings(onKey, true);
+	useKeybindings(onKey, 10);
 
 	return (
 		<Popup close={close}>

@@ -29,7 +29,7 @@ const Hashes: FunctionComponent<HashesProps> = ({ showDiff, hashes }) => {
 	return (
 		<Column>
 			{hashes.map(hash => (
-				<Hash ref={selectable({ Enter: () => showDiff(hash), ' ': () => showDiff(hash) })}>{hash}</Hash>
+				<Hash ref={selectable({ ' ': () => showDiff(hash), d: () => showDiff(hash) })}>{hash}</Hash>
 			))}
 		</Column>
 	);
@@ -37,13 +37,13 @@ const Hashes: FunctionComponent<HashesProps> = ({ showDiff, hashes }) => {
 
 type Props = { showDiff: (hash: string) => void };
 
-const Commits: FunctionComponent<Props> = ({ showDiff }) => {
+const Commits: FunctionComponent<Props> = props => {
 	const commits = useFetch<[string, string][]>('commits');
 
 	if (!commits) return null;
 	return (
 		<Group title="Recent commits" section>
-			<Hashes hashes={commits.map(([hash]) => hash)} showDiff={showDiff} />
+			<Hashes hashes={commits.map(([hash]) => hash)} {...props} />
 			<Column>
 				{commits.map(([_, text]) => (
 					<Text>{text.replaceAll('\n', ' ')}</Text>

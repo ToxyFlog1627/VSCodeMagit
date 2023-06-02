@@ -20,11 +20,12 @@ const Selection: FunctionComponent<Props> = ({ selectedIndex }) => {
 	const elementRef = useRef(null);
 
 	const onKey = (event: KeyboardEvent) => {
-		if (selectedIndex < 0 || !elements[selectedIndex].keybindings[event.key]) return;
+		if (selectedIndex < 0 || !elements[selectedIndex].keybindings[event.key]) return false;
 		elements[selectedIndex].keybindings[event.key](event);
+		return true;
 	};
 
-	useKeybindings(onKey);
+	useKeybindings(onKey, 5);
 
 	useEffect(() => {
 		if (!elementRef.current) return;
