@@ -91,7 +91,6 @@ export const stageRange = async ({ file, header, index, length }: RangePos) => {
 	await writeRangeToPatchFile(hunk, fileHeader, body);
 
 	const { error } = await exec(`git apply --cached '${patchPath}'`);
-	console.log(patchPath);
 	if (error) return { error: true };
 	return { data: null };
 };

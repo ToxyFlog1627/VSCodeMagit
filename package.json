@@ -6,7 +6,7 @@
 	"repository": "https://github.com/ToxyFlog1627/vscode-magit",
 	"publisher": "toxyflog1627",
 	"author": "https://github.com/ToxyFlog1627",
-	"version": "0.5.3",
+	"version": "0.5.5",
 	"engines": {
 		"vscode": "^1.74.0"
 	},
