@@ -3,7 +3,7 @@
 	"displayName": "Magit for VSCode",
 	"icon": "assets/icon.png",
 	"description": "Magit-like git client for VSCode",
-	"repository": "https://github.com/ToxyFlog1627/vscode-magit",
+	"repository": "https://github.com/ToxyFlog1627/VSCodeMagit",
 	"publisher": "toxyflog1627",
 	"author": "https://github.com/ToxyFlog1627",
 	"version": "0.5.5",

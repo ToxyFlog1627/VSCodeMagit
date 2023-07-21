@@ -4,7 +4,7 @@ Magit-like git client for VSCode \
 \
 **DISCLAIMER**: This extension doesn't act exactly as Magit, but is inspired by it.
 
-> For suggestions, bugs and issues go to [github repo](https://github.com/ToxyFlog1627/vscode-magit)
+> For suggestions, bugs and issues go to [github repo](https://github.com/ToxyFlog1627/VSCodeMagit)
 
 ## Keybindings
 
