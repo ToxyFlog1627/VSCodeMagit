@@ -1,3 +1,5 @@
+# This extension is no longer supported, you should instead take a look at [better alternative](https://marketplace.visualstudio.com/items?itemName=kahole.magit).
+
 # Vscode-magit
 
 Magit-like git client for VSCode \
